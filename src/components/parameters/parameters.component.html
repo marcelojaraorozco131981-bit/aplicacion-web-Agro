@@ -1,0 +1,37 @@
+<div class="container mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-3xl font-bold text-gray-100">Parámetros Generales</h2>
+    <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200">
+      Guardar Cambios
+    </button>
+  </div>
+
+  <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label for="company-name" class="block text-sm font-medium text-gray-300">Nombre de la Empresa</label>
+        <input type="text" id="company-name" value="AgroSys S.A." class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+      </div>
+      <div>
+        <label for="current-season" class="block text-sm font-medium text-gray-300">Temporada Agrícola Actual</label>
+        <input type="text" id="current-season" value="2024-2025" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+      </div>
+      <div>
+        <label for="default-currency" class="block text-sm font-medium text-gray-300">Moneda por Defecto</label>
+        <select id="default-currency" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+          <option>USD - Dólar Americano</option>
+          <option selected>CLP - Peso Chileno</option>
+          <option>EUR - Euro</option>
+        </select>
+      </div>
+        <div>
+        <label for="timezone" class="block text-sm font-medium text-gray-300">Zona Horaria</label>
+        <select id="timezone" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+          <option selected>UTC-4 (Santiago)</option>
+          <option>UTC-3 (Buenos Aires)</option>
+          <option>UTC-5 (Lima)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

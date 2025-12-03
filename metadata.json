@@ -1,0 +1,5 @@
+{
+  "name": "AgroSys Dashboard",
+  "description": "A comprehensive management system for an agricultural enterprise, featuring modules for warehouses, purchase orders, accounting, payroll, and more. This dashboard provides a centralized view of all operations.",
+  "requestFramePermissions": []
+}
