@@ -42,27 +42,60 @@
                 @for(submodule of module.children; track submodule.id) {
                   <li>
                     @if (submodule.children) {
-                      <div>
+                      <div class="relative group">
                         <button (click)="toggleSubmenu(submodule.id)" class="w-full flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors duration-200"
                           [class]="(isSidebarOpen() ? '' : 'justify-center ') + (isSubmenuActive(submodule) ? 'text-emerald-400' : 'hover:bg-gray-700')">
-                          <span class="text-sm font-medium">{{ submodule.name }}</span>
+                          <div class="flex items-center">
+                            @switch (submodule.id) {
+                                @case ('payroll-parameters-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> }
+                            }
+                            <span 
+                              class="text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-200 ease-in-out"
+                              [class]="isSidebarOpen() ? 'max-w-xs ml-3' : 'max-w-0'">
+                              {{ submodule.name }}
+                            </span>
+                          </div>
                           @if (isSidebarOpen()) {
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300" [class]="openSubmenuIds()[submodule.id] ? 'rotate-90' : ''" viewBox="0 0 20 20" fill="currentColor">
                               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                             </svg>
                           }
                         </button>
+                         @if (!isSidebarOpen()) {
+                            <span class="absolute left-full ml-3 w-auto p-2 min-w-max rounded-md shadow-md text-white bg-gray-900 border border-gray-700 text-xs font-bold transition-all duration-100 scale-0 origin-left group-hover:scale-100 z-10">
+                              {{ submodule.name }}
+                            </span>
+                          }
                         <div class="overflow-hidden transition-all duration-300 ease-in-out" [style.max-height.px]="openSubmenuIds()[submodule.id] ? 500 : 0">
                            <ul class="pt-1 space-y-1" [class]="isSidebarOpen() ? 'pl-4' : ''">
                             @for(grandchild of submodule.children; track grandchild.id) {
                               <li>
                                 <a (click)="selectModule(grandchild.id)"
-                                  class="flex items-center p-2 rounded-md cursor-pointer transition-colors duration-200"
-                                  [class]="(isSidebarOpen() ? '' : 'justify-center ') + (selectedModuleId() === grandchild.id ? 'bg-emerald-500 text-white shadow-md' : 'hover:bg-gray-700')">
-                                  @if(isSidebarOpen()){
-                                    <span class="text-sm font-medium">{{ grandchild.name }}</span>
-                                  } @else {
-                                    <span class="w-1.5 h-1.5 rounded-full" [class]="selectedModuleId() === grandchild.id ? 'bg-emerald-400' : 'bg-gray-500'"></span>
+                                  class="relative group flex items-center p-2 rounded-md cursor-pointer transition-colors duration-200"
+                                  [class]="(isSidebarOpen() ? 'pl-3' : 'justify-center ') + (selectedModuleId() === grandchild.id ? 'bg-emerald-500 text-white shadow-md' : 'hover:bg-gray-700')">
+                                  
+                                  @switch (grandchild.id) {
+                                    @case ('payroll-activities') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> }
+                                    @case ('general-tables') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg> }
+                                    @case ('assets-discounts') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 16v-1m0 1v.01M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z" /></svg> }
+                                    @case ('settlement-parameters') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> }
+                                    @case ('company-settlement-parameters') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M5 13h14M5 17h14M5 9h14" /></svg> }
+                                    @case ('unique-tax') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg> }
+                                    @case ('farms') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2l-7 7-7-7" /></svg> }
+                                    @case ('labor') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg> }
+                                    @case ('labor-activity') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg> }
+                                  }
+
+                                  <span 
+                                    class="text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-200 ease-in-out"
+                                    [class]="isSidebarOpen() ? 'max-w-xs ml-3' : 'max-w-0'">
+                                    {{ grandchild.name }}
+                                  </span>
+
+                                  @if (!isSidebarOpen()) {
+                                    <span class="absolute left-full ml-3 w-auto p-2 min-w-max rounded-md shadow-md text-white bg-gray-900 border border-gray-700 text-xs font-bold transition-all duration-100 scale-0 origin-left group-hover:scale-100 z-10">
+                                      {{ grandchild.name }}
+                                    </span>
                                   }
                                 </a>
                               </li>
@@ -167,6 +200,13 @@
         @case ('accounting') { <app-accounting></app-accounting> }
         @case ('payroll-activities') { <app-payroll-activities></app-payroll-activities> }
         @case ('general-tables') { <app-general-tables></app-general-tables> }
+        @case ('assets-discounts') { <app-assets-discounts></app-assets-discounts> }
+        @case ('settlement-parameters') { <app-settlement-parameters></app-settlement-parameters> }
+        @case ('company-settlement-parameters') { <app-company-settlement-parameters></app-company-settlement-parameters> }
+        @case ('unique-tax') { <app-unique-tax></app-unique-tax> }
+        @case ('farms') { <app-farms></app-farms> }
+        @case ('labor') { <app-labor></app-labor> }
+        @case ('labor-activity') { <app-labor-activity></app-labor-activity> }
         @case ('plant') { <app-plant></app-plant> }
         @case ('exports') { <app-exports></app-exports> }
         @case ('budget') { <app-budget></app-budget> }

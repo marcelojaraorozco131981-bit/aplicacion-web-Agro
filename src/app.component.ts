@@ -14,6 +14,13 @@ import { UsersComponent } from './components/users/users.component';
 import { ParametersComponent } from './components/parameters/parameters.component';
 import { PayrollActivitiesComponent } from './components/payroll-activities/payroll-activities.component';
 import { GeneralTablesComponent } from './components/general-tables/general-tables.component';
+import { SettlementParametersComponent } from './components/settlement-parameters/settlement-parameters.component';
+import { AssetsDiscountsComponent } from './components/assets-discounts/assets-discounts.component';
+import { CompanySettlementParametersComponent } from './components/company-settlement-parameters/company-settlement-parameters.component';
+import { UniqueTaxComponent } from './components/unique-tax/unique-tax.component';
+import { FarmsComponent } from './components/farms/farms.component';
+import { LaborComponent } from './components/labor/labor.component';
+import { LaborActivityComponent } from './components/labor-activity/labor-activity.component';
 
 interface NavItem {
   id: string;
@@ -39,8 +46,15 @@ interface NavItem {
     UsersComponent,
     ParametersComponent,
     PayrollActivitiesComponent,
-    GeneralTablesComponent
-  ]
+    GeneralTablesComponent,
+    SettlementParametersComponent,
+    AssetsDiscountsComponent,
+    CompanySettlementParametersComponent,
+    UniqueTaxComponent,
+    FarmsComponent,
+    LaborComponent,
+    LaborActivityComponent,
+  ],
 })
 export class AppComponent {
   isSidebarOpen = signal(true);
@@ -62,6 +76,13 @@ export class AppComponent {
           children: [
             { id: 'payroll-activities', name: 'Actividades' },
             { id: 'general-tables', name: 'Tablas Generales' },
+            { id: 'assets-discounts', name: 'Haberes y Descuentos' },
+            { id: 'settlement-parameters', name: 'Parametros de Liquidacion' },
+            { id: 'company-settlement-parameters', name: 'Parametros de Liquidacion Empresa' },
+            { id: 'unique-tax', name: 'Impuesto Unico' },
+            { id: 'farms', name: 'Fundos' },
+            { id: 'labor', name: 'Labor' },
+            { id: 'labor-activity', name: 'Actividad Labor' },
           ],
         },
       ],
