@@ -62,6 +62,30 @@ import { GeographicLocationComponent } from './components/geographic-location/ge
 import { FinancialIndicatorsComponent } from './components/financial-indicators/financial-indicators.component';
 import { ProfileTypeComponent } from './components/profile-type/profile-type.component';
 import { ProfilesComponent } from './components/profiles/profiles.component';
+import { WarehouseParametersComponent } from './components/warehouse-parameters/warehouse-parameters.component';
+import { WarehouseMovementsComponent } from './components/warehouse-movements/warehouse-movements.component';
+import { WarehouseReportsComponent } from './components/warehouse-reports/warehouse-reports.component';
+import { WarehouseAccountingTransferComponent } from './components/warehouse-accounting-transfer/warehouse-accounting-transfer.component';
+import { WarehouseMonthEndClosingComponent } from './components/warehouse-month-end-closing/warehouse-month-end-closing.component';
+import { MachineryComponent } from './components/machinery/machinery.component';
+import { MachineryParametersComponent } from './components/machinery-parameters/machinery-parameters.component';
+import { DailyMachineryLogComponent } from './components/daily-machinery-log/daily-machinery-log.component';
+import { OtherProratableValuesComponent } from './components/other-proratable-values/other-proratable-values.component';
+import { ProratableValuesReportComponent } from './components/proratable-values-report/proratable-values-report.component';
+import { MonthlyProrationComponent } from './components/monthly-proration/monthly-proration.component';
+import { MachineryReportsComponent } from './components/machinery-reports/machinery-reports.component';
+import { MachineryAccountingTransferComponent } from './components/machinery-accounting-transfer/machinery-accounting-transfer.component';
+import { PurchaseParametersComponent } from './components/purchase-parameters/purchase-parameters.component';
+import { PurchaseRequestComponent } from './components/purchase-request/purchase-request.component';
+import { PurchaseRequestReportComponent } from './components/purchase-request-report/purchase-request-report.component';
+import { PurchaseOrderReportComponent } from './components/purchase-order-report/purchase-order-report.component';
+import { CloseReactivatePoComponent } from './components/close-reactivate-po/close-reactivate-po.component';
+import { PurchaseOrderApprovalComponent } from './components/purchase-order-approval/purchase-order-approval.component';
+import { PoServiceReceptionComponent } from './components/po-service-reception/po-service-reception.component';
+import { DepartmentUserReportComponent } from './components/department-user-report/department-user-report.component';
+import { PendingPoReportComponent } from './components/pending-po-report/pending-po-report.component';
+import { SupplierProductPriceReportComponent } from './components/supplier-product-price-report/supplier-product-price-report.component';
+import { CostCenterDistributionReportComponent } from './components/cost-center-distribution-report/cost-center-distribution-report.component';
 
 
 interface NavItem {
@@ -137,6 +161,30 @@ interface NavItem {
     FinancialIndicatorsComponent,
     ProfileTypeComponent,
     ProfilesComponent,
+    WarehouseParametersComponent,
+    WarehouseMovementsComponent,
+    WarehouseReportsComponent,
+    WarehouseAccountingTransferComponent,
+    WarehouseMonthEndClosingComponent,
+    MachineryComponent,
+    MachineryParametersComponent,
+    DailyMachineryLogComponent,
+    OtherProratableValuesComponent,
+    ProratableValuesReportComponent,
+    MonthlyProrationComponent,
+    MachineryReportsComponent,
+    MachineryAccountingTransferComponent,
+    PurchaseParametersComponent,
+    PurchaseRequestComponent,
+    PurchaseRequestReportComponent,
+    PurchaseOrderReportComponent,
+    CloseReactivatePoComponent,
+    PurchaseOrderApprovalComponent,
+    PoServiceReceptionComponent,
+    DepartmentUserReportComponent,
+    PendingPoReportComponent,
+    SupplierProductPriceReportComponent,
+    CostCenterDistributionReportComponent,
   ],
 })
 export class AppComponent {
@@ -162,8 +210,50 @@ export class AppComponent {
         { id: 'budgetary-control', name: 'Control Presupuestario' },
       ]
     },
-    { id: 'warehouses', name: 'Bodegas' },
-    { id: 'purchase-orders', name: 'Órdenes de Compra' },
+    { 
+      id: 'warehouses-group', 
+      name: 'Bodegas',
+      children: [
+        { id: 'warehouse-summary', name: 'Resumen Bodega' },
+        { id: 'warehouse-parameters', name: 'Parametros Bodega' },
+        { id: 'warehouse-movements', name: 'Movimientos Bodega' },
+        { id: 'warehouse-reports', name: 'Informes Bodega' },
+        { id: 'warehouse-accounting-transfer', name: 'Traspaso Contable' },
+        { id: 'warehouse-month-end-closing', name: 'Cierre Mes' }
+      ]
+    },
+    { 
+      id: 'purchase-group', 
+      name: 'Compras',
+      children: [
+        { id: 'purchase-parameters', name: 'Parametros Compras' },
+        { id: 'purchase-request', name: 'Solicitud de Compras' },
+        { id: 'purchase-request-report', name: 'Informe Solicitud de Compras' },
+        { id: 'purchase-order', name: 'Orden de Compra' },
+        { id: 'purchase-order-report', name: 'Informe Orden de Compra' },
+        { id: 'close-reactivate-po', name: 'Cerrar Reactivar Orden de Compra' },
+        { id: 'purchase-order-approval', name: 'Aprobacion Orden de Compra' },
+        { id: 'po-service-reception', name: 'Recepcion Orden de Compra Servicios' },
+        { id: 'department-user-report', name: 'Informe Departamento Usuario' },
+        { id: 'pending-po-report', name: 'Informe Orden de Compra Pendiente' },
+        { id: 'supplier-product-price-report', name: 'Informe Proveedor Producto Precio' },
+        { id: 'cost-center-distribution-report', name: 'Informe Distribucion CC' },
+      ]
+    },
+    { 
+      id: 'machinery-group', 
+      name: 'Maquinarias',
+      children: [
+        { id: 'machinery-summary', name: 'Resumen Maquinaria' },
+        { id: 'machinery-parameters', name: 'Parametros Maquinaria' },
+        { id: 'daily-machinery-log', name: 'Digitacion Diaria Maquinarias' },
+        { id: 'other-proratable-values', name: 'Otros Valores a Prorratear' },
+        { id: 'proratable-values-report', name: 'Informe Otros Valores a Prorratear' },
+        { id: 'monthly-proration', name: 'Prorrateo Mensual' },
+        { id: 'machinery-reports', name: 'Informes Maquinaria' },
+        { id: 'machinery-accounting-transfer', name: 'Traspaso Contable' }
+      ]
+    },
     { id: 'accounting', name: 'Contabilidad' },
     {
       id: 'payroll-group',
