@@ -256,7 +256,8 @@ interface NavItem {
   ],
 })
 export class AppComponent {
-  isSidebarOpen = signal(true);
+  isSidebarOpen = signal(true); // For desktop sidebar collapse
+  isMobileMenuOpen = signal(false); // For mobile off-canvas menu
   selectedModuleId = signal('dashboard-overview');
   openSubmenuIds = signal<Record<string, boolean>>({});
   
@@ -522,32 +523,37 @@ export class AppComponent {
   toggleSidebar(): void {
     this.isSidebarOpen.update(open => !open);
   }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update(open => !open);
+  }
   
   selectTopModule(moduleId: string): void {
     this.selectedTopModuleId.set(moduleId);
     const firstChild = this.currentSidebarModules()[0];
     if (firstChild) {
-      // If the first child is a group, select its first grandchild
       if (firstChild.children && firstChild.children.length > 0) {
         this.selectedModuleId.set(firstChild.children[0].id);
       } else {
         this.selectedModuleId.set(firstChild.id);
       }
     }
-    // Auto-open first submenu in the new context
     this.openSubmenuIds.set({});
     if (this.currentSidebarModules().length > 0 && this.currentSidebarModules()[0].children) {
         this.toggleSubmenu(this.currentSidebarModules()[0].id);
     }
   }
 
-  selectModule(moduleId: string): void {
+  selectModule(moduleId: string, isLeaf: boolean): void {
     this.selectedModuleId.set(moduleId);
+    if (isLeaf && this.isMobileMenuOpen()) {
+      this.isMobileMenuOpen.set(false);
+    }
   }
 
   toggleSubmenu(moduleId: string): void {
     this.openSubmenuIds.update(ids => ({
-      // ...ids, // uncomment for multiple submenus open
+      // ...ids, // uncomment for multiple submenus open at once
       [moduleId]: !ids[moduleId],
     }));
   }
@@ -571,6 +577,12 @@ export class AppComponent {
   }
 
   // Header Methods
+  goToDashboard(): void {
+    this.selectedTopModuleId.set('dashboard-group');
+    this.selectedModuleId.set('dashboard-overview');
+    this.openSubmenuIds.set({});
+  }
+
   toggleCompanyDropdown(): void {
     this.isCompanyDropdownOpen.update(open => !open);
     if (this.isCompanyDropdownOpen()) {
