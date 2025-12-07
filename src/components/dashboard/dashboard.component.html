@@ -3,26 +3,38 @@
   
   <!-- KPI Cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-700/50 hover:border-emerald-500 transition-all duration-200 cursor-pointer">
       <h3 class="text-lg font-semibold text-gray-400">Inventario Total</h3>
       <p class="text-3xl font-bold text-emerald-400 mt-2">12,450 Unidades</p>
     </div>
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-700/50 hover:border-amber-500 transition-all duration-200 cursor-pointer">
       <h3 class="text-lg font-semibold text-gray-400">Órdenes Pendientes</h3>
       <p class="text-3xl font-bold text-amber-400 mt-2">32</p>
     </div>
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-700/50 hover:border-cyan-500 transition-all duration-200 cursor-pointer">
       <h3 class="text-lg font-semibold text-gray-400">Presupuesto Mensual</h3>
       <p class="text-3xl font-bold text-cyan-400 mt-2">$ 85,000 / $120,000</p>
     </div>
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-700/50 hover:border-lime-500 transition-all duration-200 cursor-pointer">
       <h3 class="text-lg font-semibold text-gray-400">Cosecha Estimada</h3>
       <p class="text-3xl font-bold text-lime-400 mt-2">500 Toneladas</p>
     </div>
   </div>
 
-  <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-    <h3 class="text-xl font-semibold mb-4 text-gray-100">Bienvenido al Sistema de Gestión Agrícola</h3>
-    <p class="text-gray-400">Utilice el menú de la izquierda para navegar por los diferentes módulos del sistema. Este panel principal le ofrece una vista rápida de los indicadores clave de rendimiento de la empresa.</p>
+  <!-- Charts and other info -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+        <h3 class="text-xl font-semibold mb-4 text-gray-100">Costos vs. Presupuesto (Últimos 6 meses)</h3>
+        <div class="h-64 bg-gray-700/50 rounded-md flex items-center justify-center">
+            <p class="text-gray-500">Gráfico en construcción</p>
+        </div>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+        <h3 class="text-xl font-semibold mb-4 text-gray-100">Producción Semanal</h3>
+        <div class="h-64 bg-gray-700/50 rounded-md flex items-center justify-center">
+            <p class="text-gray-500">Gráfico en construcción</p>
+        </div>
+      </div>
   </div>
+
 </div>

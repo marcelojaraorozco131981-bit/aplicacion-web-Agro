@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -259,6 +259,9 @@ export class AppComponent {
   isSidebarOpen = signal(true);
   selectedModuleId = signal('dashboard-overview');
   openSubmenuIds = signal<Record<string, boolean>>({});
+  
+  // New Hybrid Navigation State
+  selectedTopModuleId = signal('dashboard-group');
 
   // Header State
   currentUser = signal({ name: 'Admin', avatar: 'https://picsum.photos/100' });
@@ -511,8 +514,31 @@ export class AppComponent {
     },
   ];
 
+  currentSidebarModules = computed(() => {
+    const topModule = this.modules.find(m => m.id === this.selectedTopModuleId());
+    return topModule?.children ?? [];
+  });
+
   toggleSidebar(): void {
     this.isSidebarOpen.update(open => !open);
+  }
+  
+  selectTopModule(moduleId: string): void {
+    this.selectedTopModuleId.set(moduleId);
+    const firstChild = this.currentSidebarModules()[0];
+    if (firstChild) {
+      // If the first child is a group, select its first grandchild
+      if (firstChild.children && firstChild.children.length > 0) {
+        this.selectedModuleId.set(firstChild.children[0].id);
+      } else {
+        this.selectedModuleId.set(firstChild.id);
+      }
+    }
+    // Auto-open first submenu in the new context
+    this.openSubmenuIds.set({});
+    if (this.currentSidebarModules().length > 0 && this.currentSidebarModules()[0].children) {
+        this.toggleSubmenu(this.currentSidebarModules()[0].id);
+    }
   }
 
   selectModule(moduleId: string): void {
@@ -521,7 +547,7 @@ export class AppComponent {
 
   toggleSubmenu(moduleId: string): void {
     this.openSubmenuIds.update(ids => ({
-      ...ids,
+      // ...ids, // uncomment for multiple submenus open
       [moduleId]: !ids[moduleId],
     }));
   }
