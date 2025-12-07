@@ -86,6 +86,40 @@ import { DepartmentUserReportComponent } from './components/department-user-repo
 import { PendingPoReportComponent } from './components/pending-po-report/pending-po-report.component';
 import { SupplierProductPriceReportComponent } from './components/supplier-product-price-report/supplier-product-price-report.component';
 import { CostCenterDistributionReportComponent } from './components/cost-center-distribution-report/cost-center-distribution-report.component';
+import { ProvidersComponent } from './components/providers/providers.component';
+import { SalesComponent } from './components/sales/sales.component';
+import { TreasuryComponent } from './components/treasury/treasury.component';
+import { FixedAssetsComponent } from './components/fixed-assets/fixed-assets.component';
+import { PlantParametersComponent } from './components/plant-parameters/plant-parameters.component';
+import { BulkFruitComponent } from './components/bulk-fruit/bulk-fruit.component';
+import { PackingComponent } from './components/packing/packing.component';
+import { ColdStorageComponent } from './components/cold-storage/cold-storage.component';
+import { QualityControlComponent } from './components/quality-control/quality-control.component';
+import { PackagingControlComponent } from './components/packaging-control/packaging-control.component';
+import { ExportParametersComponent } from './components/export-parameters/export-parameters.component';
+import { SchedulingComponent } from './components/scheduling/scheduling.component';
+import { ShipmentComponent } from './components/shipment/shipment.component';
+import { ValuationComponent } from './components/valuation/valuation.component';
+import { CommercialManagementAccountComponent } from './components/commercial-management-account/commercial-management-account.component';
+import { ContractorParametersComponent } from './components/contractor-parameters/contractor-parameters.component';
+import { ContractorFileComponent } from './components/contractor-file/contractor-file.component';
+import { ContractEntryComponent } from './components/contract-entry/contract-entry.component';
+import { PersonnelEnrollmentComponent } from './components/personnel-enrollment/personnel-enrollment.component';
+import { PersonnelAttendanceComponent } from './components/personnel-attendance/personnel-attendance.component';
+import { AttendanceReportComponent } from './components/attendance-report/attendance-report.component';
+import { AgromovilComponent } from './components/agromovil/agromovil.component';
+import { ProductionControlComponent } from './components/production-control/production-control.component';
+import { ContractorProductionReportComponent } from './components/contractor-production-report/contractor-production-report.component';
+import { ContractorCostReportComponent } from './components/contractor-cost-report/contractor-cost-report.component';
+import { ContractorRevaluationComponent } from './components/contractor-revaluation/contractor-revaluation.component';
+import { ContractorProformaInvoiceComponent } from './components/contractor-proforma-invoice/contractor-proforma-invoice.component';
+import { ContractorMonthEndClosingComponent } from './components/contractor-month-end-closing/contractor-month-end-closing.component';
+import { BpaParametersComponent } from './components/bpa-parameters/bpa-parameters.component';
+import { ApplicationOrderPlanningComponent } from './components/application-order-planning/application-order-planning.component';
+import { ApplicationOrderExecutionComponent } from './components/application-order-execution/application-order-execution.component';
+import { OrdersCalendarComponent } from './components/orders-calendar/orders-calendar.component';
+import { CloseOrdersComponent } from './components/close-orders/close-orders.component';
+import { BpaReportsComponent } from './components/bpa-reports/bpa-reports.component';
 
 
 interface NavItem {
@@ -185,6 +219,40 @@ interface NavItem {
     PendingPoReportComponent,
     SupplierProductPriceReportComponent,
     CostCenterDistributionReportComponent,
+    ProvidersComponent,
+    SalesComponent,
+    TreasuryComponent,
+    FixedAssetsComponent,
+    PlantParametersComponent,
+    BulkFruitComponent,
+    PackingComponent,
+    ColdStorageComponent,
+    QualityControlComponent,
+    PackagingControlComponent,
+    ExportParametersComponent,
+    SchedulingComponent,
+    ShipmentComponent,
+    ValuationComponent,
+    CommercialManagementAccountComponent,
+    ContractorParametersComponent,
+    ContractorFileComponent,
+    ContractEntryComponent,
+    PersonnelEnrollmentComponent,
+    PersonnelAttendanceComponent,
+    AttendanceReportComponent,
+    AgromovilComponent,
+    ProductionControlComponent,
+    ContractorProductionReportComponent,
+    ContractorCostReportComponent,
+    ContractorRevaluationComponent,
+    ContractorProformaInvoiceComponent,
+    ContractorMonthEndClosingComponent,
+    BpaParametersComponent,
+    ApplicationOrderPlanningComponent,
+    ApplicationOrderExecutionComponent,
+    OrdersCalendarComponent,
+    CloseOrdersComponent,
+    BpaReportsComponent,
   ],
 })
 export class AppComponent {
@@ -254,7 +322,17 @@ export class AppComponent {
         { id: 'machinery-accounting-transfer', name: 'Traspaso Contable' }
       ]
     },
-    { id: 'accounting', name: 'Contabilidad' },
+    { 
+      id: 'accounting-group', 
+      name: 'Contabilidad',
+      children: [
+        { id: 'accounting-summary', name: 'Contabilidad' },
+        { id: 'providers', name: 'Proveedores' },
+        { id: 'sales', name: 'Venta' },
+        { id: 'treasury', name: 'Tesoreria' },
+        { id: 'fixed-assets', name: 'Activo Fijo' }
+      ]
+    },
     {
       id: 'payroll-group',
       name: 'Remuneraciones',
@@ -306,7 +384,7 @@ export class AppComponent {
         },
         {
           id: 'payroll-process-group',
-          name: 'Remuneraciones',
+          name: 'Proceso de Remuneraciones',
           children: [
             { id: 'payroll-process', name: 'Proceso' }
           ]
@@ -334,10 +412,65 @@ export class AppComponent {
         }
       ],
     },
-    { id: 'plant', name: 'Planta' },
-    { id: 'exports', name: 'Exportaciones' },
+    { 
+      id: 'plant-group', 
+      name: 'Planta',
+      children: [
+        { id: 'plant-summary', name: 'Resumen Planta' },
+        { id: 'plant-parameters', name: 'Parametros Planta' },
+        { id: 'bulk-fruit', name: 'Fruta Granel' },
+        { id: 'packing', name: 'Packing' },
+        { id: 'cold-storage', name: 'Frigorifico' },
+        { id: 'quality-control', name: 'Control Calidad' },
+        { id: 'packaging-control', name: 'Control Envases' }
+      ]
+    },
+    { 
+      id: 'exports-group', 
+      name: 'Exportaciones',
+      children: [
+        { id: 'exports-summary', name: 'Resumen Exportaciones' },
+        { id: 'export-parameters', name: 'Parametros Export' },
+        { id: 'scheduling', name: 'Programacion' },
+        { id: 'shipment', name: 'Embarque' },
+        { id: 'valuation', name: 'Valorizacion' },
+        { id: 'commercial-management-account', name: 'Cuenta Corriente Gestion Comercial' }
+      ]
+    },
     { id: 'budget', name: 'Presupuesto' },
-    { id: 'contractors', name: 'Contratistas' },
+    { 
+      id: 'contractors-group', 
+      name: 'Contratistas',
+      children: [
+        { id: 'contractor-summary', name: 'Resumen Contratistas' },
+        { id: 'contractor-parameters', name: 'Parametros Contra' },
+        { id: 'contractor-file', name: 'Ficha Contratista' },
+        { id: 'contract-entry', name: 'Ingreso Contratos' },
+        { id: 'personnel-enrollment', name: 'Enrolamiento Personal' },
+        { id: 'personnel-attendance', name: 'Asistencia Personal' },
+        { id: 'attendance-report', name: 'Informe Asistencia' },
+        { id: 'agromovil', name: 'Agromovil' },
+        { id: 'production-control', name: 'Control Produccion' },
+        { id: 'contractor-production-report', name: 'Informe Control Produccion Contratista' },
+        { id: 'contractor-cost-report', name: 'Informe Costos Contratista' },
+        { id: 'contractor-revaluation', name: 'Revalorizacion Contratista' },
+        { id: 'contractor-proforma-invoice', name: 'Factura Proforma Contratista' },
+        { id: 'contractor-month-end-closing', name: 'Cierre Mes' },
+      ]
+    },
+    {
+      id: 'bpa-group',
+      name: 'BPA',
+      children: [
+        { id: 'bpa-summary', name: 'Resumen BPA' },
+        { id: 'bpa-parameters', name: 'Parametros Bpa' },
+        { id: 'application-order-planning', name: 'Orden Aplicacion Planificacion' },
+        { id: 'application-order-execution', name: 'Orden Aplicacion Ejecucion' },
+        { id: 'orders-calendar', name: 'Calendario Ordenes' },
+        { id: 'close-orders', name: 'Cerrar Ordenes' },
+        { id: 'bpa-reports', name: 'Informes' },
+      ]
+    },
     {
       id: 'users-group',
       name: 'Usuarios',
@@ -361,7 +494,6 @@ export class AppComponent {
         { id: 'financial-indicators', name: 'Indicadores Financieros'},
       ]
     },
-    { id: 'bpa', name: 'BPA' }
   ];
 
   toggleSidebar(): void {
