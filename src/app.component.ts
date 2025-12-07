@@ -260,6 +260,21 @@ export class AppComponent {
   selectedModuleId = signal('dashboard-overview');
   openSubmenuIds = signal<Record<string, boolean>>({});
 
+  // Header State
+  currentUser = signal({ name: 'Admin', avatar: 'https://picsum.photos/100' });
+  economicIndicators = signal({
+    uf: '37.522,57',
+    dolar: '942,30',
+    utm: '65.770,00'
+  });
+  availableCompanies = signal([
+    { id: 1, name: 'Agrícola San José' },
+    { id: 2, name: 'Exportadora del Valle' }
+  ]);
+  selectedCompany = signal(this.availableCompanies()[0]);
+  isCompanyDropdownOpen = signal(false);
+  isUserDropdownOpen = signal(false);
+
   modules: NavItem[] = [
     {
       id: 'dashboard-group',
@@ -527,5 +542,25 @@ export class AppComponent {
     };
 
     return checkActive(module.children);
+  }
+
+  // Header Methods
+  toggleCompanyDropdown(): void {
+    this.isCompanyDropdownOpen.update(open => !open);
+    if (this.isCompanyDropdownOpen()) {
+      this.isUserDropdownOpen.set(false);
+    }
+  }
+
+  selectCompany(company: { id: number; name: string }): void {
+    this.selectedCompany.set(company);
+    this.isCompanyDropdownOpen.set(false);
+  }
+
+  toggleUserDropdown(): void {
+    this.isUserDropdownOpen.update(open => !open);
+     if (this.isUserDropdownOpen()) {
+      this.isCompanyDropdownOpen.set(false);
+    }
   }
 }
