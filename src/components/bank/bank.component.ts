@@ -183,16 +183,67 @@ export class BankComponent {
   async exportBanksToPdf(): Promise<void> {
     const { default: jsPDF } = await import('jspdf');
     const { default: autoTable } = await import('jspdf-autotable');
+
     const doc = new jsPDF();
-    doc.text('Reporte de Bancos', 14, 22);
-    autoTable(doc, {
-      startY: 30,
-      head: [['Código', 'Descripción', 'Pago Electrónico', 'Vigencia']],
-      body: this.sortedBanks().map(b => [b.bankCode, b.description, b.isElectronicPayment ? 'Sí' : 'No', b.isActive ? 'Vigente' : 'No Vigente']),
-      theme: 'striped',
-      headStyles: { fillColor: [16, 185, 129] },
+    let currentY = 22;
+
+    doc.setFontSize(18);
+    doc.text('Reporte de Bancos y Sucursales', 14, currentY);
+    currentY += 12;
+
+    this.sortedBanks().forEach(bank => {
+      if (currentY > 260) {
+        doc.addPage();
+        currentY = 20;
+      }
+
+      doc.setFontSize(14);
+      doc.setTextColor(16, 185, 129); // Emerald color
+      doc.text(`Banco: ${bank.bankCode} - ${bank.description}`, 14, currentY);
+      currentY += 7;
+
+      doc.setFontSize(10);
+      doc.setTextColor(40);
+      const electronicPaymentText = `Pago Electrónico: ${bank.isElectronicPayment ? 'Sí' : 'No'}`;
+      const statusText = `Vigencia: ${bank.isActive ? 'Vigente' : 'No Vigente'}`;
+      doc.text(`${electronicPaymentText} | ${statusText}`, 14, currentY);
+      currentY += 10;
+
+      if (bank.branches.length > 0) {
+        autoTable(doc, {
+          startY: currentY,
+          head: [['Cód. Sucursal', 'Descripción', 'Vigencia']],
+          body: bank.branches.map(branch => [
+            branch.branchCode,
+            branch.description,
+            branch.isActive ? 'Vigente' : 'No Vigente'
+          ]),
+          theme: 'grid',
+          headStyles: { fillColor: [74, 85, 104] },
+          margin: { left: 14, right: 14 }
+        });
+        currentY = (doc as any).lastAutoTable.finalY + 12;
+      } else {
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+        doc.text('Sin sucursales registradas para este banco.', 14, currentY);
+        currentY += 10;
+      }
     });
-    doc.save('Reporte_Bancos.pdf');
+    
+    // Footer
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.setTextColor(150);
+        const text = `Página ${i} de ${pageCount} | Generado el: ${new Date().toLocaleDateString()}`;
+        const textWidth = doc.getStringUnitWidth(text) * doc.getFontSize() / doc.internal.scaleFactor;
+        const textOffset = (doc.internal.pageSize.width - textWidth) / 2;
+        doc.text(text, textOffset, doc.internal.pageSize.height - 10);
+    }
+
+    doc.save('Reporte_Bancos_y_Sucursales.pdf');
   }
 
   // --- Branch Methods ---
