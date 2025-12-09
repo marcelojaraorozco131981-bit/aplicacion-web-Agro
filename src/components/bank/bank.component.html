@@ -1,0 +1,200 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+  <!-- Master Panel (Banks) -->
+  <div class="flex flex-col">
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-100">Bancos</h2>
+      <div class="flex items-center gap-2">
+        <button (click)="exportBanksToPdf()" class="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+          Exportar
+        </button>
+        <button (click)="openNewBankPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+          Nuevo Banco
+        </button>
+      </div>
+    </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden flex-1">
+      <div class="overflow-x-auto h-full">
+        <table class="min-w-full">
+          <thead class="bg-gray-700 sticky top-0">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onBankSort('bankCode')" class="flex items-center gap-1 group">Cód.</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onBankSort('description')" class="flex items-center gap-1 group">Descripción</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onBankSort('isActive')" class="flex items-center gap-1 group">Vigencia</button></th>
+              <th class="px-4 py-2 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acc.</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            @for (bank of sortedBanks(); track bank.bankCode) {
+            <tr (click)="selectBank(bank)" class="cursor-pointer transition-colors duration-200" [class.bg-emerald-900/50]="selectedBank()?.bankCode === bank.bankCode" [class.hover:bg-gray-700/50]="selectedBank()?.bankCode !== bank.bankCode" [class.opacity-60]="!bank.isActive">
+              <td class="px-4 py-2 whitespace-nowrap font-mono text-sm" [class.line-through]="!bank.isActive">{{ bank.bankCode }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm" [class.line-through]="!bank.isActive">
+                <div class="flex items-center gap-2">
+                  <span>{{ bank.description }}</span>
+                  @if(bank.isElectronicPayment) {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400" title="Pago Electrónico Activado" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                  }
+                </div>
+              </td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm"> @if(bank.isActive) { <span class="text-green-400">Vigente</span> } @else { <span class="text-gray-400">No Vigente</span> }</td>
+              <td class="px-4 py-2 whitespace-nowrap text-right text-sm">
+                <button (click)="openEditBankPanel(bank); $event.stopPropagation()" class="text-cyan-400 hover:text-cyan-300 p-1 rounded-md"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                <button (click)="openBankVigenciaModal(bank); $event.stopPropagation()" class="p-1 rounded-md ml-1" [class]="bank.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+              </td>
+            </tr>
+            } @empty { <tr><td colspan="4" class="text-center py-6 text-gray-500 text-sm">No hay bancos registrados.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Panel (Branches) -->
+  <div class="flex flex-col">
+    @if (selectedBank()) {
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-100 truncate">Sucursales de "{{selectedBank()?.description}}"</h2>
+      <button (click)="openNewBranchPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+        Nueva Sucursal
+      </button>
+    </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden flex-1">
+      <div class="overflow-x-auto h-full">
+        <table class="min-w-full">
+          <thead class="bg-gray-700 sticky top-0">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onBranchSort('branchCode')" class="flex items-center gap-1 group">Cód.</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onBranchSort('description')" class="flex items-center gap-1 group">Descripción</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onBranchSort('isActive')" class="flex items-center gap-1 group">Vigencia</button></th>
+              <th class="px-4 py-2 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acc.</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            @for (branch of sortedBranches(); track branch.branchCode) {
+            <tr class="hover:bg-gray-700/50 transition-colors duration-200" [class.opacity-60]="!branch.isActive">
+              <td class="px-4 py-2 whitespace-nowrap font-mono text-sm" [class.line-through]="!branch.isActive">{{ branch.branchCode }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm" [class.line-through]="!branch.isActive">{{ branch.description }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm">@if(branch.isActive) { <span class="text-green-400">Vigente</span> } @else { <span class="text-gray-400">No Vigente</span> }</td>
+              <td class="px-4 py-2 whitespace-nowrap text-right text-sm">
+                <button (click)="openEditBranchPanel(branch)" class="text-cyan-400 hover:text-cyan-300 p-1 rounded-md"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                <button (click)="openBranchVigenciaModal(branch)" class="p-1 rounded-md ml-1" [class]="branch.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+              </td>
+            </tr>
+            } @empty { <tr><td colspan="4" class="text-center py-6 text-gray-500 text-sm">No hay sucursales para este banco.</td></tr> }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center h-full bg-gray-800 rounded-lg border-2 border-dashed border-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M5 13h14M5 17h14M5 9h14" /></svg>
+        <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione un banco</p>
+        <p class="text-sm text-gray-500">Elija un banco de la lista de la izquierda para ver y gestionar sus sucursales.</p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Bank Panel -->
+@if (isBankPanelOpen()) {
+  <div class="relative z-40">
+    <div class="fixed inset-0 bg-black/60" (click)="closeBankPanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition ease-in-out duration-500" [class]="isBankPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="bankForm" (ngSubmit)="saveBank()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ bankFormMode() === 'new' ? 'Nuevo Banco' : 'Editar Banco' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código Banco</label>
+              <input type="number" formControlName="bankCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Descripción</label>
+              <input type="text" formControlName="description" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+            <div class="flex items-center">
+              <input id="isElectronicPayment" type="checkbox" formControlName="isElectronicPayment" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500">
+              <label for="isElectronicPayment" class="ml-2 block text-sm text-gray-300">Pago Electrónico</label>
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeBankPanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="bankForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+<!-- Bank Vigencia Modal -->
+@if (isBankConfirmModalOpen()) {
+<div class="relative z-50">
+  <div class="fixed inset-0 bg-black/60"></div>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-white">{{ bankToToggleVigencia()?.isActive ? 'Desactivar Banco' : 'Reactivar Banco' }}</h3>
+          <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ bankToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} el banco "{{ bankToToggleVigencia()?.description }}"?</p>
+        </div>
+        <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+          <button type="button" (click)="confirmToggleBankVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="bankToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">{{ bankToToggleVigencia()?.isActive ? 'Sí, desactivar' : 'Sí, reactivar' }}</button>
+          <button type="button" (click)="closeBankConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Branch Panel -->
+@if (isBranchPanelOpen()) {
+  <div class="relative z-40">
+    <div class="fixed inset-0 bg-black/60" (click)="closeBranchPanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition ease-in-out duration-500" [class]="isBranchPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="branchForm" (ngSubmit)="saveBranch()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ branchFormMode() === 'new' ? 'Nueva Sucursal' : 'Editar Sucursal' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código Sucursal</label>
+              <input type="number" formControlName="branchCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Descripción</label>
+              <input type="text" formControlName="description" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeBranchPanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="branchForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+<!-- Branch Vigencia Modal -->
+@if (isBranchConfirmModalOpen()) {
+<div class="relative z-50">
+  <div class="fixed inset-0 bg-black/60"></div>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-white">{{ branchToToggleVigencia()?.isActive ? 'Desactivar Sucursal' : 'Reactivar Sucursal' }}</h3>
+          <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ branchToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} la sucursal "{{ branchToToggleVigencia()?.description }}"?</p>
+        </div>
+        <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+          <button type="button" (click)="confirmToggleBranchVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="branchToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">{{ branchToToggleVigencia()?.isActive ? 'Sí, desactivar' : 'Sí, reactivar' }}</button>
+          <button type="button" (click)="closeBranchConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
