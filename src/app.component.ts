@@ -36,7 +36,6 @@ import { CrewBossComponent } from './components/crew-boss/crew-boss.component';
 import { TasksComponent } from './components/tasks/tasks.component';
 import { HolidaysComponent } from './components/holidays/holidays.component';
 import { AccountingParametersComponent } from './components/accounting-parameters/accounting-parameters.component';
-import { ElectronicBookParametersComponent } from './components/electronic-book-parameters/electronic-book-parameters.component';
 import { PersonalFileComponent } from './components/personal-file/personal-file.component';
 import { OwnPersonnelLaborComponent } from './components/own-personnel-labor/own-personnel-labor.component';
 import { PayrollProcessComponent } from './components/payroll-process/payroll-process.component';
@@ -120,6 +119,7 @@ import { ApplicationOrderExecutionComponent } from './components/application-ord
 import { OrdersCalendarComponent } from './components/orders-calendar/orders-calendar.component';
 import { CloseOrdersComponent } from './components/close-orders/close-orders.component';
 import { BpaReportsComponent } from './components/bpa-reports/bpa-reports.component';
+import { RemuElectronicBookParametrizationComponent } from './components/remu-electronic-book-parametrization/remu-electronic-book-parametrization.component';
 
 
 interface NavItem {
@@ -169,7 +169,6 @@ interface NavItem {
     TasksComponent,
     HolidaysComponent,
     AccountingParametersComponent,
-    ElectronicBookParametersComponent,
     PersonalFileComponent,
     OwnPersonnelLaborComponent,
     PayrollProcessComponent,
@@ -253,6 +252,7 @@ interface NavItem {
     OrdersCalendarComponent,
     CloseOrdersComponent,
     BpaReportsComponent,
+    RemuElectronicBookParametrizationComponent,
   ],
 })
 export class AppComponent {
@@ -360,31 +360,31 @@ export class AppComponent {
           id: 'payroll-parameters-group',
           name: 'Parametros Remu',
           children: [
-            { id: 'payroll-activities', name: 'Actividades' },
             { id: 'general-tables', name: 'Tablas Generales' },
             { id: 'assets-discounts', name: 'Haberes y Descuentos' },
             { id: 'settlement-parameters', name: 'Parametros de Liquidacion' },
-            { id: 'company-settlement-parameters', name: 'Parametros de Liquidacion Empresa' },
+            { id: 'company-settlement-parameters', name: 'Parametros Liquidacion Empresa' },
             { id: 'unique-tax', name: 'Impuesto Unico' },
             { id: 'farms', name: 'Fundos' },
             { id: 'labor', name: 'Labor' },
+            { id: 'payroll-activities', name: 'Actividades' },
             { id: 'labor-activity', name: 'Actividad Labor' },
-            { id: 'control-units', name: 'Unidades de Control' },
+            { id: 'control-units', name: 'Unidades Control' },
             { id: 'legal-representative', name: 'Representante Legal' },
             { id: 'farm-user-permissions', name: 'Permisos Usuario Fundo' },
-            { id: 'labor-assets-discounts-association', name: 'Asociacion Labores Haberes Descuentos' },
+            { id: 'labor-assets-discounts-association', name: 'Asociacion Labor Haberes Descuentos' },
             { id: 'weekly-schedule', name: 'Horario Semanal' },
             { id: 'afp', name: 'Afp' },
             { id: 'health', name: 'Salud' },
-            { id: 'provident-funds', name: 'Cajas de Prevision' },
+            { id: 'provident-funds', name: 'Cajas Prevision' },
             { id: 'bank', name: 'Banco' },
-            { id: 'payment-methods', name: 'Medios de Pago' },
-            { id: 'responsibility-center', name: 'Centro de Responsabilidad' },
-            { id: 'crew-boss', name: 'Jefe de Cuadrilla' },
+            { id: 'payment-methods', name: 'Medios Pago' },
+            { id: 'responsibility-center', name: 'Centro Responsabilidad' },
+            { id: 'crew-boss', name: 'Jefe Cuadrilla' },
             { id: 'tasks', name: 'Faenas' },
             { id: 'holidays', name: 'Feriados' },
             { id: 'accounting-parameters', name: 'Parametros Contabilizacion' },
-            { id: 'electronic-book-parameters', name: 'Parametros Libro Electronico' },
+            { id: 'remu-electronic-book-parametrization', name: 'Parametrizacion Libro Elec Remu' },
           ],
         },
         {
@@ -553,7 +553,7 @@ export class AppComponent {
 
   toggleSubmenu(moduleId: string): void {
     this.openSubmenuIds.update(ids => ({
-      // ...ids, // uncomment for multiple submenus open at once
+      ...ids,
       [moduleId]: !ids[moduleId],
     }));
   }

@@ -15,34 +15,8 @@
         <h1 class="text-2xl font-bold text-emerald-400">AgroSys</h1>
       </div>
       
-      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-        @for (module of modules; track module.id) {
-          @if (module.children) {
-            <div>
-              <button (click)="toggleSubmenu(module.id)" class="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-gray-700 transition-colors duration-200">
-                <span class="font-medium">{{ module.name }}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" [class]="openSubmenuIds()[module.id] ? 'rotate-90' : ''" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              <div class="overflow-hidden transition-all duration-300 ease-in-out" [style.max-height.px]="openSubmenuIds()[module.id] ? 1500 : 0">
-                <ul class="pt-1 pl-4 space-y-1">
-                  @for(submodule of module.children; track submodule.id) {
-                    <li>
-                      <a (click)="selectModule(submodule.id, !submodule.children)" [class]="'block p-2 rounded-md cursor-pointer transition-colors duration-200 ' + (selectedModuleId() === submodule.id ? 'bg-emerald-500 text-white' : 'hover:bg-gray-700')">
-                        {{ submodule.name }}
-                      </a>
-                    </li>
-                  }
-                </ul>
-              </div>
-            </div>
-          } @else {
-            <a (click)="selectModule(module.id, true)" [class]="'block p-2.5 rounded-lg cursor-pointer transition-colors duration-200 ' + (selectedModuleId() === module.id ? 'bg-emerald-500 text-white' : 'hover:bg-gray-700')">
-              <span class="font-medium">{{ module.name }}</span>
-            </a>
-          }
-        }
+      <nav class="flex-1 p-2 overflow-y-auto">
+        <ng-container [ngTemplateOutlet]="recursiveMenu" [ngTemplateOutletContext]="{$implicit: modules, level: 0, isMobile: true}"></ng-container>
       </nav>
     </aside>
   </div>
@@ -52,78 +26,13 @@
     class="hidden lg:flex flex-col bg-gray-800 text-gray-200 transition-all duration-300 ease-in-out"
     [class]="isSidebarOpen() ? 'w-64' : 'w-20'">
     
-    <div class="flex items-center justify-center h-20 border-b border-gray-700">
+    <div class="flex items-center justify-center h-20 border-b border-gray-700 shrink-0">
       <h1 [class]="isSidebarOpen() ? 'text-2xl font-bold text-emerald-400' : 'hidden'">AgroSys</h1>
       <div [class]="isSidebarOpen() ? 'hidden' : 'text-emerald-400 text-3xl font-bold'">AS</div>
     </div>
     
-    <nav class="flex-1 py-4 space-y-1 overflow-y-auto" [class]="isSidebarOpen() ? 'px-4' : 'px-3'">
-      @for (module of currentSidebarModules(); track module.id) {
-        @if (module.children) {
-          <div class="relative group">
-            <button (click)="toggleSubmenu(module.id)"
-              class="w-full flex items-center justify-between py-2.5 rounded-lg cursor-pointer transition-colors duration-200"
-              [class]="(isSidebarOpen() ? 'px-4 ' : 'justify-center ') + (isSubmenuActive(module) ? 'bg-gray-700 text-emerald-400' : 'hover:bg-gray-700')">
-              <div class="flex items-center">
-                <!-- Icons for submenus -->
-                @switch (module.id) {
-                    @case ('payroll-parameters-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> }
-                    @case ('personal-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 012-2h2a2 2 0 012 2v1m-4 0h4" /></svg> }
-                    @case ('own-personnel-labor-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg> }
-                    @case ('payroll-process-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h3m-3 0v-3m0 0h3m-6 0h3m-3 6h3m-6 0h3m-3 0h.01M12 3.055a9 9 0 100 17.89 9 9 0 000-17.89z" /></svg> }
-                    @case ('settlements-process-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> }
-                    @case ('accounting-transfer-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg> }
-                    @case ('month-end-closing-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2zM12 14l-2-2m0 0l2-2m-2 2h4" /></svg> }
-                }
-                <span class="font-medium whitespace-nowrap overflow-hidden transition-all duration-200 ease-in-out"
-                  [class]="isSidebarOpen() ? 'max-w-xs ml-4' : 'max-w-0'">{{ module.name }}</span>
-              </div>
-              @if (isSidebarOpen()) {
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" [class]="openSubmenuIds()[module.id] ? 'rotate-90' : ''" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                </svg>
-              }
-            </button>
-            <div class="overflow-hidden transition-all duration-300 ease-in-out" [style.max-height.px]="openSubmenuIds()[module.id] ? 1500 : 0">
-              <ul class="pt-1 space-y-1" [class]="isSidebarOpen() ? 'pl-4' : ''">
-                @for(submodule of module.children; track submodule.id) {
-                  <li>
-                    <a (click)="selectModule(submodule.id, true)"
-                      class="relative group flex items-center p-2 rounded-md cursor-pointer transition-colors duration-200"
-                      [class]="(isSidebarOpen() ? 'pl-3' : 'justify-center ') + (selectedModuleId() === submodule.id ? 'bg-emerald-500 text-white shadow-md' : 'hover:bg-gray-700')">
-                      <!-- Icons for leaf nodes -->
-                       @if (!isSidebarOpen()) {
-                        <span class="absolute left-full ml-3 w-auto p-2 min-w-max rounded-md shadow-md text-white bg-gray-900 border border-gray-700 text-xs font-bold transition-all duration-100 scale-0 origin-left group-hover:scale-100 z-50">
-                          {{ submodule.name }}
-                        </span>
-                      }
-                      <span class="text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-200 ease-in-out"
-                        [class]="isSidebarOpen() ? 'max-w-xs' : 'max-w-0'">{{ submodule.name }}</span>
-                    </a>
-                  </li>
-                }
-              </ul>
-            </div>
-            @if (!isSidebarOpen()) {
-               <span class="absolute left-full ml-3 w-auto p-2 min-w-max rounded-md shadow-md text-white bg-gray-900 border border-gray-700 text-xs font-bold transition-all duration-100 scale-0 origin-left group-hover:scale-100 z-50">
-                  {{ module.name }}
-                </span>
-            }
-          </div>
-        } @else {
-          <a (click)="selectModule(module.id, true)"
-            class="relative group flex items-center py-2.5 rounded-lg cursor-pointer transition-colors duration-200"
-            [class]="(isSidebarOpen() ? 'px-4 ' : 'justify-center ') + (selectedModuleId() === module.id ? 'bg-emerald-500 text-white shadow-lg' : 'hover:bg-gray-700')">
-            @if (!isSidebarOpen()) {
-              <span class="absolute left-full ml-3 w-auto p-2 min-w-max rounded-md shadow-md text-white bg-gray-900 border border-gray-700 text-xs font-bold transition-all duration-100 scale-0 origin-left group-hover:scale-100 z-50">
-                {{ module.name }}
-              </span>
-            }
-            <span class="font-medium whitespace-nowrap overflow-hidden transition-all duration-200 ease-in-out"
-              [class]="isSidebarOpen() ? 'max-w-xs' : 'max-w-0'">{{ module.name }}</span>
-          </a>
-        }
-      }
+    <nav class="flex-1 py-4 space-y-1 overflow-y-auto" [class]="isSidebarOpen() ? 'px-2' : 'px-3'">
+       <ng-container [ngTemplateOutlet]="recursiveMenu" [ngTemplateOutletContext]="{$implicit: currentSidebarModules(), level: 0, isMobile: false}"></ng-container>
     </nav>
   </aside>
 
@@ -312,7 +221,7 @@
         @case ('tasks') { <app-tasks></app-tasks> }
         @case ('holidays') { <app-holidays></app-holidays> }
         @case ('accounting-parameters') { <app-accounting-parameters></app-accounting-parameters> }
-        @case ('electronic-book-parameters') { <app-electronic-book-parameters></app-electronic-book-parameters> }
+        @case ('remu-electronic-book-parametrization') { <app-remu-electronic-book-parametrization></app-remu-electronic-book-parametrization> }
         @case ('personal-file') { <app-personal-file></app-personal-file> }
         @case ('own-personnel-labor') { <app-own-personnel-labor></app-own-personnel-labor> }
         @case ('payroll-process') { <app-payroll-process></app-payroll-process> }
@@ -370,3 +279,86 @@
     </main>
   </div>
 </div>
+
+<!-- ############################################################# -->
+<!-- # RECUSIVE TEMPLATE FOR RENDERING NAVIGATION WITH ANY DEPTH # -->
+<!-- ############################################################# -->
+<ng-template #recursiveMenu let-items let-level="level" let-isMobile="isMobile">
+  <ul class="space-y-1" [style.padding-left.rem]="level > 0 && isMobile ? 1 : 0">
+    @for(item of items; track item.id) {
+      <li class="relative">
+        @if (item.children && item.children.length > 0) {
+          <!-- Item with children (Submenu) -->
+          <div class="relative group">
+            <button (click)="toggleSubmenu(item.id)" 
+                    class="w-full flex items-center justify-between p-2.5 rounded-lg transition-colors duration-200 text-left"
+                    [class]="isSubmenuActive(item) && !isMobile ? 'bg-gray-700' : 'hover:bg-gray-700'"
+                    [class.justify-center]="!isSidebarOpen() && !isMobile">
+              <div class="flex items-center gap-3">
+                @if (!isSidebarOpen() && !isMobile) {
+                  <!-- Icon Only for Collapsed Desktop -->
+                  <ng-container [ngTemplateOutlet]="menuIcon" [ngTemplateOutletContext]="{$implicit: item.id}"></ng-container>
+                } @else {
+                  <!-- Icon and Text -->
+                  <ng-container [ngTemplateOutlet]="menuIcon" [ngTemplateOutletContext]="{$implicit: item.id}"></ng-container>
+                  <span class="font-medium text-sm whitespace-nowrap">{{ item.name }}</span>
+                }
+              </div>
+              @if (isSidebarOpen() || isMobile) {
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300 shrink-0" [class]="openSubmenuIds()[item.id] ? 'rotate-90' : ''" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              }
+            </button>
+            @if (!isSidebarOpen() && !isMobile) {
+              <span class="absolute left-full ml-3 w-auto p-2 min-w-max rounded-md shadow-md text-white bg-gray-900 border border-gray-700 text-xs font-bold transition-all duration-100 scale-0 origin-left group-hover:scale-100 z-50">
+                {{ item.name }}
+              </span>
+            }
+          </div>
+          <div class="overflow-hidden transition-all duration-300 ease-in-out" [style.max-height.px]="openSubmenuIds()[item.id] ? 1500 : 0">
+            <!-- RECURSIVE CALL -->
+            <ng-container [ngTemplateOutlet]="recursiveMenu" [ngTemplateOutletContext]="{$implicit: item.children, level: level + 1, isMobile: isMobile}"></ng-container>
+          </div>
+        } @else {
+          <!-- Leaf Item -->
+          <a (click)="selectModule(item.id, true)"
+             class="relative group flex items-center p-2.5 rounded-lg cursor-pointer transition-colors duration-200"
+             [class.justify-center]="!isSidebarOpen() && !isMobile"
+             [class]="selectedModuleId() === item.id ? 'bg-emerald-500 text-white shadow-md' : 'hover:bg-gray-700'">
+            <div class="flex items-center gap-3">
+              @if (!isSidebarOpen() && !isMobile) {
+                 <ng-container [ngTemplateOutlet]="menuIcon" [ngTemplateOutletContext]="{$implicit: item.id}"></ng-container>
+              } @else {
+                 <ng-container [ngTemplateOutlet]="menuIcon" [ngTemplateOutletContext]="{$implicit: item.id}"></ng-container>
+                <span class="font-medium text-sm whitespace-nowrap">{{ item.name }}</span>
+              }
+            </div>
+            @if (!isSidebarOpen() && !isMobile) {
+              <span class="absolute left-full ml-3 w-auto p-2 min-w-max rounded-md shadow-md text-white bg-gray-900 border border-gray-700 text-xs font-bold transition-all duration-100 scale-0 origin-left group-hover:scale-100 z-50">
+                {{ item.name }}
+              </span>
+            }
+          </a>
+        }
+      </li>
+    }
+  </ul>
+</ng-template>
+
+<!-- ############################################################# -->
+<!-- # REUSABLE TEMPLATE FOR ALL MENU ICONS                    # -->
+<!-- ############################################################# -->
+<ng-template #menuIcon let-id>
+    @switch (id) {
+      @case ('dashboard-overview') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg> }
+      @case ('payroll-parameters-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> }
+      @case ('personal-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 012-2h2a2 2 0 012 2v1m-4 0h4" /></svg> }
+      @case ('own-personnel-labor-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg> }
+      @case ('payroll-process-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h3m-3 0v-3m0 0h3m-6 0h3m-3 6h3m-6 0h3m-3 0h.01M12 3.055a9 9 0 100 17.89 9 9 0 000-17.89z" /></svg> }
+      @case ('settlements-process-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> }
+      @case ('accounting-transfer-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg> }
+      @case ('month-end-closing-group') { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2zM12 14l-2-2m0 0l2-2m-2 2h4" /></svg> }
+      @default { <div class="w-5 h-5 shrink-0"></div> }
+    }
+</ng-template>
