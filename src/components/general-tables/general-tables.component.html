@@ -1,0 +1,187 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+  <!-- Master Panel (Tables) -->
+  <div class="flex flex-col">
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-100">Tablas Generales</h2>
+      <div class="flex items-center gap-2">
+        <button (click)="exportToPdf()" class="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+          Exportar
+        </button>
+        <button (click)="openNewTablePanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+          Nueva Tabla
+        </button>
+      </div>
+    </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden flex-1">
+      <div class="overflow-y-auto h-full">
+        <table class="min-w-full">
+          <thead class="bg-gray-700 sticky top-0">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onTableSort('tableCode')" class="flex items-center gap-1 group">Cód.</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onTableSort('description')" class="flex items-center gap-1 group">Descripción</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onTableSort('isActive')" class="flex items-center gap-1 group">Vigencia</button></th>
+              <th class="px-4 py-2 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acc.</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            @for (table of sortedTables(); track table.tableCode) {
+            <tr (click)="selectTable(table)" class="cursor-pointer transition-colors duration-200" [class.bg-emerald-900/50]="selectedTable()?.tableCode === table.tableCode" [class.hover:bg-gray-700/50]="selectedTable()?.tableCode !== table.tableCode" [class.opacity-60]="!table.isActive">
+              <td class="px-4 py-2 whitespace-nowrap font-mono text-sm" [class.line-through]="!table.isActive">{{ table.tableCode }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm" [class.line-through]="!table.isActive">{{ table.description }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm"> @if(table.isActive) { <span class="text-green-400">Vigente</span> } @else { <span class="text-gray-400">No Vigente</span> }</td>
+              <td class="px-4 py-2 whitespace-nowrap text-right text-sm">
+                <button (click)="openEditTablePanel(table); $event.stopPropagation()" class="text-cyan-400 hover:text-cyan-300 p-1 rounded-md"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                <button (click)="openTableVigenciaModal(table); $event.stopPropagation()" class="p-1 rounded-md ml-1" [class]="table.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+              </td>
+            </tr>
+            } @empty { <tr><td colspan="4" class="text-center py-6 text-gray-500 text-sm">No hay tablas registradas.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Panel (Items) -->
+  <div class="flex flex-col">
+    @if (selectedTable()) {
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-100 truncate">Ítems de "{{selectedTable()?.description}}"</h2>
+      <button (click)="openNewItemPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+        Nuevo Ítem
+      </button>
+    </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden flex-1">
+      <div class="overflow-y-auto h-full">
+        <table class="min-w-full">
+          <thead class="bg-gray-700 sticky top-0">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onItemSort('itemCode')" class="flex items-center gap-1 group">Cód.</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onItemSort('description')" class="flex items-center gap-1 group">Descripción</button></th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onItemSort('isActive')" class="flex items-center gap-1 group">Vigencia</button></th>
+              <th class="px-4 py-2 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acc.</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            @for (item of sortedItems(); track item.itemCode) {
+            <tr class="hover:bg-gray-700/50 transition-colors duration-200" [class.opacity-60]="!item.isActive">
+              <td class="px-4 py-2 whitespace-nowrap font-mono text-sm" [class.line-through]="!item.isActive">{{ item.itemCode }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm" [class.line-through]="!item.isActive">{{ item.description }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm">@if(item.isActive) { <span class="text-green-400">Vigente</span> } @else { <span class="text-gray-400">No Vigente</span> }</td>
+              <td class="px-4 py-2 whitespace-nowrap text-right text-sm">
+                <button (click)="openEditItemPanel(item)" class="text-cyan-400 hover:text-cyan-300 p-1 rounded-md"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                <button (click)="openItemVigenciaModal(item)" class="p-1 rounded-md ml-1" [class]="item.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+              </td>
+            </tr>
+            } @empty { <tr><td colspan="4" class="text-center py-6 text-gray-500 text-sm">No hay ítems para esta tabla.</td></tr> }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center h-full bg-gray-800 rounded-lg border-2 border-dashed border-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" /></svg>
+        <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione una Tabla</p>
+        <p class="text-sm text-gray-500">Elija una tabla de la lista de la izquierda para ver y gestionar sus ítems.</p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Table Panel -->
+@if (isTablePanelOpen()) {
+  <div class="relative z-40">
+    <div class="fixed inset-0 bg-black/60" (click)="closeTablePanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition ease-in-out duration-500" [class]="isTablePanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="tableForm" (ngSubmit)="saveTable()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ tableFormMode() === 'new' ? 'Nueva Tabla General' : 'Editar Tabla General' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código Tabla</label>
+              <input type="number" formControlName="tableCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Descripción</label>
+              <input type="text" formControlName="description" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeTablePanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="tableForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+<!-- Table Vigencia Modal -->
+@if (isTableConfirmModalOpen()) {
+<div class="relative z-50">
+  <div class="fixed inset-0 bg-black/60"></div>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-white">{{ tableToToggleVigencia()?.isActive ? 'Desactivar Tabla' : 'Reactivar Tabla' }}</h3>
+          <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ tableToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} la tabla "{{ tableToToggleVigencia()?.description }}"?</p>
+        </div>
+        <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+          <button type="button" (click)="confirmToggleTableVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="tableToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">{{ tableToToggleVigencia()?.isActive ? 'Sí, desactivar' : 'Sí, reactivar' }}</button>
+          <button type="button" (click)="closeTableConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Item Panel -->
+@if (isItemPanelOpen()) {
+  <div class="relative z-40">
+    <div class="fixed inset-0 bg-black/60" (click)="closeItemPanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition ease-in-out duration-500" [class]="isItemPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="itemForm" (ngSubmit)="saveItem()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ itemFormMode() === 'new' ? 'Nuevo Ítem' : 'Editar Ítem' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código Ítem</label>
+              <input type="number" formControlName="itemCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Descripción</label>
+              <input type="text" formControlName="description" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeItemPanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="itemForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+<!-- Item Vigencia Modal -->
+@if (isItemConfirmModalOpen()) {
+<div class="relative z-50">
+  <div class="fixed inset-0 bg-black/60"></div>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-white">{{ itemToToggleVigencia()?.isActive ? 'Desactivar Ítem' : 'Reactivar Ítem' }}</h3>
+          <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ itemToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} el ítem "{{ itemToToggleVigencia()?.description }}"?</p>
+        </div>
+        <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+          <button type="button" (click)="confirmToggleItemVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="itemToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">{{ itemToToggleVigencia()?.isActive ? 'Sí, desactivar' : 'Sí, reactivar' }}</button>
+          <button type="button" (click)="closeItemConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

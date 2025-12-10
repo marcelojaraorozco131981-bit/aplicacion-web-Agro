@@ -259,11 +259,8 @@ export class AppComponent {
   isSidebarOpen = signal(true); // For desktop sidebar collapse
   isMobileMenuOpen = signal(false); // For mobile off-canvas menu
   selectedModuleId = signal('dashboard-overview');
-  openSubmenuIds = signal<Record<string, boolean>>({});
+  openSubmenuIds = signal<Record<string, boolean>>({ 'dashboard-group': true });
   
-  // New Hybrid Navigation State
-  selectedTopModuleId = signal('dashboard-group');
-
   // Header State
   currentUser = signal({ name: 'Admin', avatar: 'https://picsum.photos/100' });
   economicIndicators = signal({
@@ -515,11 +512,6 @@ export class AppComponent {
     },
   ];
 
-  currentSidebarModules = computed(() => {
-    const topModule = this.modules.find(m => m.id === this.selectedTopModuleId());
-    return topModule?.children ?? [];
-  });
-
   toggleSidebar(): void {
     this.isSidebarOpen.update(open => !open);
   }
@@ -528,22 +520,6 @@ export class AppComponent {
     this.isMobileMenuOpen.update(open => !open);
   }
   
-  selectTopModule(moduleId: string): void {
-    this.selectedTopModuleId.set(moduleId);
-    const firstChild = this.currentSidebarModules()[0];
-    if (firstChild) {
-      if (firstChild.children && firstChild.children.length > 0) {
-        this.selectedModuleId.set(firstChild.children[0].id);
-      } else {
-        this.selectedModuleId.set(firstChild.id);
-      }
-    }
-    this.openSubmenuIds.set({});
-    if (this.currentSidebarModules().length > 0 && this.currentSidebarModules()[0].children) {
-        this.toggleSubmenu(this.currentSidebarModules()[0].id);
-    }
-  }
-
   selectModule(moduleId: string, isLeaf: boolean): void {
     this.selectedModuleId.set(moduleId);
     if (isLeaf && this.isMobileMenuOpen()) {
@@ -578,9 +554,11 @@ export class AppComponent {
 
   // Header Methods
   goToDashboard(): void {
-    this.selectedTopModuleId.set('dashboard-group');
     this.selectedModuleId.set('dashboard-overview');
-    this.openSubmenuIds.set({});
+    this.openSubmenuIds.set({ 'dashboard-group': true });
+    if (this.isMobileMenuOpen()) {
+      this.isMobileMenuOpen.set(false);
+    }
   }
 
   toggleCompanyDropdown(): void {
