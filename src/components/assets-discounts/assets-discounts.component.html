@@ -18,10 +18,10 @@
       <table class="min-w-full">
         <thead class="bg-gray-700">
           <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('familyName')" class="flex items-center gap-1.5 group">Familia</button></th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('subFamilyName')" class="flex items-center gap-1.5 group">Subfamilia</button></th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('code')" class="flex items-center gap-1.5 group">Código</button></th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('description')" class="flex items-center gap-1.5 group">Descripción</button></th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('codeType')" class="flex items-center gap-1.5 group">Tipo</button></th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('isTaxable')" class="flex items-center gap-1.5 group">Imponible</button></th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('isActive')" class="flex items-center gap-1.5 group">Vigencia</button></th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
           </tr>
@@ -29,15 +29,15 @@
         <tbody class="divide-y divide-gray-700">
           @for (item of sortedItems(); track item.id) {
             <tr class="hover:bg-gray-700/50" [class.opacity-60]="!item.isActive">
-              <td class="px-6 py-4" [class.line-through]="!item.isActive">{{ item.code }}</td>
-              <td class="px-6 py-4" [class.line-through]="!item.isActive">{{ item.description }}</td>
-              <td class="px-6 py-4 capitalize" [class.line-through]="!item.isActive">{{ item.codeType }}</td>
-              <td class="px-6 py-4" [class.line-through]="!item.isActive">{{ item.isTaxable ? 'Sí' : 'No' }}</td>
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 whitespace-nowrap" [class.line-through]="!item.isActive">{{ item.familyName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap" [class.line-through]="!item.isActive">{{ item.subFamilyName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap font-mono" [class.line-through]="!item.isActive">{{ item.code }}</td>
+              <td class="px-6 py-4 whitespace-nowrap" [class.line-through]="!item.isActive">{{ item.description }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
                 @if(item.isActive) { <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Vigente</span> }
                 @else { <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-600 text-gray-300">No Vigente</span> }
               </td>
-              <td class="px-6 py-4 text-right">
+              <td class="px-6 py-4 whitespace-nowrap text-right">
                 <button (click)="openEditPanel(item)" class="text-cyan-400 hover:text-cyan-300 p-2 rounded-md"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
                 <button (click)="openVigenciaModal(item)" class="p-2 rounded-md ml-2" [class]="item.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
               </td>
@@ -62,23 +62,89 @@
           
           <div class="relative mt-6 flex-1 px-6 space-y-4">
             
-            <!-- SECTIONS -->
             @for (section of [['identification', 'Identificación'], ['classification', 'Clasificación'], ['value_config', 'Configuración de Valor'], ['attributes', 'Atributos'], ['settlement_config', 'Configuración de Liquidación'], ['calculation', 'Cálculo'], ['accounting', 'Contabilidad y Visualización']]; track section[0]) {
               <div class="border border-gray-700 rounded-lg">
                 <button type="button" (click)="toggleSection(section[0])" class="w-full flex justify-between items-center p-3 bg-gray-700/50 rounded-t-lg">
                   <span class="font-semibold text-gray-200">{{ section[1] }}</span>
-                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="openSections()[section[0]]"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  <svg class="w-5 h-5 text-gray-400 transition-transform" [class.rotate-180]="!openSections()[section[0]]"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 </button>
                 @if (openSections()[section[0]]) {
                   <div class="p-4 space-y-4">
                     @switch (section[0]) {
                       @case ('identification') {
-                        <!-- Identification Fields -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <select formControlName="familyCode" class="bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white">
+                                <option [ngValue]="null" disabled>Seleccione Familia...</option>
+                                @for(family of families(); track family.id) {
+                                    <option [ngValue]="family.id">{{ family.name }}</option>
+                                }
+                            </select>
+                            <select formControlName="subFamilyCode" class="bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white disabled:opacity-50">
+                                <option [ngValue]="null" disabled>Seleccione Subfamilia...</option>
+                                @for(subFamily of filteredSubFamilies(); track subFamily.id) {
+                                    <option [ngValue]="subFamily.id">{{ subFamily.name }}</option>
+                                }
+                            </select>
+                        </div>
+                        <fieldset class="space-y-2">
+                          <legend class="text-sm font-medium text-gray-300">Tipo de Código</legend>
+                          <div class="flex items-center gap-x-6">
+                            <div class="flex items-center gap-x-2"><input id="type-haber" type="radio" value="haber" formControlName="codeType" class="h-4 w-4 border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="type-haber">Haber</label></div>
+                            <div class="flex items-center gap-x-2"><input id="type-descuento" type="radio" value="descuento" formControlName="codeType" class="h-4 w-4 border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="type-descuento">Descuento</label></div>
+                            <div class="flex items-center gap-x-2"><input id="type-referencial" type="radio" value="referencial" formControlName="codeType" class="h-4 w-4 border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="type-referencial">Referencial</label></div>
+                          </div>
+                        </fieldset>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <input type="number" formControlName="code" placeholder="Código Haber/Descuento" class="bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white disabled:opacity-50">
+                           <input type="text" formControlName="description" placeholder="Descripción" class="bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white">
+                        </div>
                       }
                       @case ('classification') {
-                        <!-- Classification Fields -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div class="flex items-center gap-x-2"><input type="checkbox" formControlName="isBono" id="isBono" class="h-4 w-4 rounded border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="isBono">Bono</label></div>
+                            <div class="flex items-center gap-x-2"><input type="checkbox" formControlName="isBonoMo" id="isBonoMo" class="h-4 w-4 rounded border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="isBonoMo">Bono MO</label></div>
+                            <div class="flex items-center gap-x-2"><input type="checkbox" formControlName="isPrestamo" id="isPrestamo" class="h-4 w-4 rounded border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="isPrestamo">Préstamo</label></div>
+                            <div class="flex items-center gap-x-2"><input type="checkbox" formControlName="isAnticipo" id="isAnticipo" class="h-4 w-4 rounded border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="isAnticipo">Anticipo</label></div>
+                        </div>
                       }
-                      <!-- ... other cases ... -->
+                      @case ('value_config') {
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <select formControlName="period" class="bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white"><option value="" disabled>Período...</option><option value="mensual">Mensual</option><option value="fijo">Fijo</option><option value="transitorio">Transitorio</option></select>
+                            <select formControlName="currency" class="bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white"><option value="" disabled>Moneda...</option><option value="peso">Peso</option><option value="uf">UF</option><option value="porcentaje">Porcentaje</option></select>
+                            @if(assetDiscountForm.get('currency')?.value === 'uf') {
+                                <select formControlName="ufType" class="bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white"><option value="" disabled>Tipo UF...</option><option value="actual">UF Actual</option><option value="mes_anterior">UF Mes Anterior</option><option value="proximo_mes">UF Próximo Mes</option></select>
+                            }
+                        </div>
+                      }
+                       @case ('settlement_config') {
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300">Orden Liquidación</label>
+                            <input type="number" formControlName="liquidationOrder" class="mt-1 w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white">
+                        </div>
+                      }
+                      @case ('attributes') {
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <fieldset><legend class="text-sm font-medium text-gray-300">Código Editable</legend><div class="flex items-center gap-x-4"><div class="flex items-center gap-x-1"><input id="editable-si" type="radio" [value]="true" formControlName="isCodeEditable" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="editable-si">Sí</label></div><div class="flex items-center gap-x-1"><input id="editable-no" type="radio" [value]="false" formControlName="isCodeEditable" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="editable-no">No</label></div></div></fieldset>
+                            <fieldset><legend class="text-sm font-medium text-gray-300">Imponible</legend><div class="flex items-center gap-x-4"><div class="flex items-center gap-x-1"><input id="imponible-si" type="radio" [value]="true" formControlName="isTaxable" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="imponible-si">Sí</label></div><div class="flex items-center gap-x-1"><input id="imponible-no" type="radio" [value]="false" formControlName="isTaxable" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="imponible-no">No</label></div></div></fieldset>
+                            <fieldset><legend class="text-sm font-medium text-gray-300">Tipo Valor</legend><div class="flex items-center gap-x-4"><div class="flex items-center gap-x-1"><input id="valor-cantidad" type="radio" value="cantidad" formControlName="valueType" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="valor-cantidad">Cantidad</label></div><div class="flex items-center gap-x-1"><input id="valor-monto" type="radio" value="monto" formControlName="valueType" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="valor-monto">Monto</label></div></div></fieldset>
+                            @if (assetDiscountForm.get('isTaxable')?.value === true) {
+                                <fieldset><legend class="text-sm font-medium text-gray-300">Rebaja Monto Tributable</legend><div class="flex items-center gap-x-4"><div class="flex items-center gap-x-1"><input id="rebaja-si" type="radio" [value]="true" formControlName="isTaxableDiscount" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="rebaja-si">Sí</label></div><div class="flex items-center gap-x-1"><input id="rebaja-no" type="radio" [value]="false" formControlName="isTaxableDiscount" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="rebaja-no">No</label></div></div></fieldset>
+                            }
+                        </div>
+                      }
+                      @case ('calculation') {
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <fieldset><legend class="text-sm font-medium text-gray-300">Cálculo Diario</legend><select formControlName="dailyCalculation" class="mt-1 w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white"><option value="" disabled>Seleccione...</option><option value="dias_trabajados_reales">Días Trabajados Reales</option><option value="dias_totales">Días Totales</option><option value="no_aplica">No Aplica</option></select></fieldset>
+                            <fieldset><legend class="text-sm font-medium text-gray-300">Tipo de Monto</legend><div class="flex items-center gap-x-4"><div class="flex items-center gap-x-1"><input id="monto-diario" type="radio" value="monto_diario" formControlName="amountType" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="monto-diario">Monto Diario</label></div><div class="flex items-center gap-x-1"><input id="monto-mensual" type="radio" value="monto_mensual" formControlName="amountType" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="monto-mensual">Monto Mensual</label></div></div></fieldset>
+                        </div>
+                      }
+                      @case ('accounting') {
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+                            <div class="flex items-center gap-x-2"><input type="checkbox" formControlName="isCompanyCost" id="isCompanyCost" class="h-4 w-4 rounded border-gray-600 text-emerald-600 focus:ring-emerald-500"><label for="isCompanyCost">Costo Empresa</label></div>
+                            <fieldset><legend class="text-sm font-medium text-gray-300">Contabilizar</legend><div class="flex items-center gap-x-4"><div class="flex items-center gap-x-1"><input id="contabilizar-si" type="radio" [value]="true" formControlName="shouldAccount" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="contabilizar-si">Sí</label></div><div class="flex items-center gap-x-1"><input id="contabilizar-no" type="radio" [value]="false" formControlName="shouldAccount" class="h-4 w-4 border-gray-600 text-emerald-600"><label for="contabilizar-no">No</label></div></div></fieldset>
+                            <fieldset class="col-span-full"><legend class="text-sm font-medium text-gray-300">Ocultar en...</legend><div class="flex items-center gap-x-6 mt-2"><div class="flex items-center gap-x-2"><input type="checkbox" formControlName="hideInDetail" id="hideInDetail" class="h-4 w-4 rounded border-gray-600 text-emerald-600"><label for="hideInDetail">Detalle Liquidación</label></div><div class="flex items-center gap-x-2"><input type="checkbox" formControlName="hideInHeaderFooter" id="hideInHeaderFooter" class="h-4 w-4 rounded border-gray-600 text-emerald-600"><label for="hideInHeaderFooter">Cabecera/Pie Liquidación</label></div></div></fieldset>
+                        </div>
+                      }
                     }
                   </div>
                 }

@@ -2,10 +2,23 @@ import { ChangeDetectionStrategy, Component, signal, inject, computed, OnInit } 
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
+interface Family {
+  id: number;
+  name: string;
+}
+
+interface SubFamily {
+  id: number;
+  familyId: number;
+  name: string;
+}
+
 interface AssetDiscount {
   id: number;
   familyCode: number;
   subFamilyCode: number;
+  familyName?: string;
+  subFamilyName?: string;
   codeType: 'haber' | 'descuento' | 'referencial';
   code: number;
   description: string;
@@ -55,16 +68,52 @@ export class AssetsDiscountsComponent implements OnInit {
     accounting: false,
   });
 
-  sortColumn = signal<keyof AssetDiscount>('code');
+  // Master Data for dropdowns
+  families = signal<Family[]>([
+    { id: 1, name: 'Haberes Imponibles' },
+    { id: 2, name: 'Haberes no Imponibles' },
+    { id: 3, name: 'Descuentos Legales' },
+  ]);
+
+  subFamilies = signal<SubFamily[]>([
+    { id: 101, familyId: 1, name: 'Sueldos' },
+    { id: 102, familyId: 1, name: 'Bonos' },
+    { id: 201, familyId: 2, name: 'Asignaciones' },
+    { id: 202, familyId: 2, name: 'Colación' },
+    { id: 301, familyId: 3, name: 'Previsión' },
+    { id: 302, familyId: 3, name: 'Salud' },
+  ]);
+
+  sortColumn = signal<keyof AssetDiscount | 'familyName' | 'subFamilyName'>('code');
   sortDirection = signal<'asc' | 'desc'>('asc');
 
+  filteredSubFamilies = computed(() => {
+    const selectedFamilyId = this.assetDiscountForm.get('familyCode')?.value;
+    if (!selectedFamilyId) {
+      return [];
+    }
+    return this.subFamilies().filter(sf => sf.familyId === Number(selectedFamilyId));
+  });
+
+  displayItems = computed(() => {
+    return this.items().map(item => {
+      const family = this.families().find(f => f.id === item.familyCode);
+      const subFamily = this.subFamilies().find(sf => sf.id === item.subFamilyCode);
+      return {
+        ...item,
+        familyName: family ? family.name : 'N/A',
+        subFamilyName: subFamily ? subFamily.name : 'N/A',
+      };
+    });
+  });
+
   sortedItems = computed(() => {
-    const list = this.items();
+    const list = this.displayItems();
     const column = this.sortColumn();
     const direction = this.sortDirection();
     return [...list].sort((a, b) => {
-      const aValue = a[column];
-      const bValue = b[column];
+      const aValue = (a as any)[column];
+      const bValue = (b as any)[column];
       let comparison = 0;
       if (typeof aValue === 'number' && typeof bValue === 'number') comparison = aValue - bValue;
       else if (typeof aValue === 'boolean' && typeof bValue === 'boolean') comparison = aValue === bValue ? 0 : aValue ? -1 : 1;
@@ -75,8 +124,8 @@ export class AssetsDiscountsComponent implements OnInit {
 
   assetDiscountForm = this.fb.group({
     id: [0],
-    familyCode: [null as number | null, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-    subFamilyCode: [null as number | null, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    familyCode: [null as number | null, Validators.required],
+    subFamilyCode: [{ value: null as number | null, disabled: true }, Validators.required],
     codeType: [null as AssetDiscount['codeType'] | null, Validators.required],
     code: [null as number | null, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
     description: ['', Validators.required],
@@ -101,6 +150,16 @@ export class AssetsDiscountsComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.assetDiscountForm.get('familyCode')?.valueChanges.subscribe(familyId => {
+      const subFamilyControl = this.assetDiscountForm.get('subFamilyCode');
+      subFamilyControl?.reset();
+      if (familyId) {
+        subFamilyControl?.enable();
+      } else {
+        subFamilyControl?.disable();
+      }
+    });
+
     this.assetDiscountForm.get('currency')?.valueChanges.subscribe(value => {
       const ufTypeControl = this.assetDiscountForm.get('ufType');
       if (value === 'uf') {
@@ -137,6 +196,7 @@ export class AssetsDiscountsComponent implements OnInit {
     });
     this.assetDiscountForm.get('code')?.enable();
     this.assetDiscountForm.get('code')?.setValidators([Validators.required, this.codeExistsValidator.bind(this)]);
+    this.assetDiscountForm.get('subFamilyCode')?.disable();
     this.assetDiscountForm.updateValueAndValidity();
     this.isPanelOpen.set(true);
   }
@@ -145,6 +205,9 @@ export class AssetsDiscountsComponent implements OnInit {
     this.formMode.set('edit');
     this.assetDiscountForm.reset();
     this.assetDiscountForm.patchValue(item);
+    if (item.familyCode) {
+        this.assetDiscountForm.get('subFamilyCode')?.enable();
+    }
     this.assetDiscountForm.get('code')?.disable();
     this.assetDiscountForm.get('code')?.clearValidators();
     this.assetDiscountForm.updateValueAndValidity();
@@ -163,7 +226,7 @@ export class AssetsDiscountsComponent implements OnInit {
       newItem.id = Date.now();
       this.items.update(items => [...items, newItem]);
     } else {
-      this.items.update(items => items.map(i => i.id === formValue.id ? { ...i, ...formValue } : i));
+      this.items.update(items => items.map(i => i.id === formValue.id ? { ...i, ...formValue } as AssetDiscount : i));
     }
     this.closePanel();
   }
@@ -184,7 +247,7 @@ export class AssetsDiscountsComponent implements OnInit {
   closePanel = () => this.isPanelOpen.set(false);
   closeConfirmModal = () => { this.isConfirmModalOpen.set(false); this.itemToToggleVigencia.set(null); };
 
-  onSort(column: keyof AssetDiscount): void {
+  onSort(column: keyof AssetDiscount | 'familyName' | 'subFamilyName'): void {
     if (this.sortColumn() === column) {
       this.sortDirection.update(dir => (dir === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -203,9 +266,14 @@ export class AssetsDiscountsComponent implements OnInit {
     const { default: autoTable } = await import('jspdf-autotable');
 
     const doc = new jsPDF();
-    const head = [['Código', 'Descripción', 'Tipo', 'Período', 'Moneda', 'Vigencia']];
+    const head = [['Familia', 'Subfamilia', 'Código', 'Descripción', 'Tipo', 'Vigencia']];
     const body = this.sortedItems().map(i => [
-      i.code, i.description, i.codeType, i.period, i.currency, i.isActive ? 'Vigente' : 'No Vigente'
+      i.familyName,
+      i.subFamilyName,
+      i.code, 
+      i.description, 
+      i.codeType, 
+      i.isActive ? 'Vigente' : 'No Vigente'
     ]);
 
     doc.setFontSize(18);
