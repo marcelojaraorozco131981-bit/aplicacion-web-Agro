@@ -55,7 +55,7 @@ export class ResponsibilityCenterComponent {
   });
 
   responsibilityCenterForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
   });
 
@@ -65,7 +65,7 @@ export class ResponsibilityCenterComponent {
     this.responsibilityCenterForm.get('code')?.enable();
     this.responsibilityCenterForm.get('code')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.responsibilityCenterForm.updateValueAndValidity();

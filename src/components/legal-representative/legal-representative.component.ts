@@ -95,9 +95,8 @@ export class LegalRepresentativeComponent {
 
   // --- Form ---
   representativeForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     name: ['', Validators.required],
-    // FIX: Use static class member 'LegalRepresentativeComponent.rutValidator' instead of 'this.rutValidator' for the static method.
     rut: ['', [Validators.required, LegalRepresentativeComponent.rutValidator]],
     position: ['', Validators.required],
   });
@@ -118,7 +117,7 @@ export class LegalRepresentativeComponent {
     this.formMode.set('new');
     this.representativeForm.reset();
     this.representativeForm.get('code')?.enable();
-    this.representativeForm.get('code')?.setValidators([Validators.required, Validators.pattern(/^[0-9]+$/), this.codeExistsValidator.bind(this)]);
+    this.representativeForm.get('code')?.setValidators([Validators.required, Validators.pattern('^[0-9]+$'), this.codeExistsValidator.bind(this)]);
     this.representativeForm.updateValueAndValidity();
     this.isPanelOpen.set(true);
   }
@@ -202,7 +201,7 @@ export class LegalRepresentativeComponent {
     const rut = control.value;
     if (!rut) return null;
     
-    let valor = rut.replace('.', '').replace('-', '');
+    let valor = rut.replace(/\./g, '').replace('-', '');
     let cuerpo = valor.slice(0, -1);
     let dv = valor.slice(-1).toUpperCase();
     

@@ -57,10 +57,10 @@ export class HealthComponent {
   });
 
   healthForm = this.fb.group({
-    healthCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-    previredCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    healthCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
+    previredCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
-    accountingAux: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    accountingAux: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
   });
 
   openNewPanel(): void {
@@ -69,7 +69,7 @@ export class HealthComponent {
     this.healthForm.get('healthCode')?.enable();
     this.healthForm.get('healthCode')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.healthForm.updateValueAndValidity();

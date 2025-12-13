@@ -120,6 +120,10 @@ import { OrdersCalendarComponent } from './components/orders-calendar/orders-cal
 import { CloseOrdersComponent } from './components/close-orders/close-orders.component';
 import { BpaReportsComponent } from './components/bpa-reports/bpa-reports.component';
 import { RemuElectronicBookParametrizationComponent } from './components/remu-electronic-book-parametrization/remu-electronic-book-parametrization.component';
+import { MaestroArticulosComponent } from './components/maestro-articulos/maestro-articulos.component';
+import { MaestroOtrosArticulosComponent } from './components/maestro-otros-articulos/maestro-otros-articulos.component';
+import { DepartamentosComponent } from './components/departamentos/departamentos.component';
+import { AsignacionPermisosUsuarioComponent } from './components/asignacion-permisos-usuario/asignacion-permisos-usuario.component';
 
 
 interface NavItem {
@@ -253,6 +257,10 @@ interface NavItem {
     CloseOrdersComponent,
     BpaReportsComponent,
     RemuElectronicBookParametrizationComponent,
+    MaestroArticulosComponent,
+    MaestroOtrosArticulosComponent,
+    DepartamentosComponent,
+    AsignacionPermisosUsuarioComponent,
   ],
 })
 export class AppComponent {
@@ -310,7 +318,16 @@ export class AppComponent {
       id: 'purchase-group', 
       name: 'Compras',
       children: [
-        { id: 'purchase-parameters', name: 'Parametros Compras' },
+        {
+          id: 'purchase-parameters-group',
+          name: 'Parámetros de Compras',
+          children: [
+            { id: 'maestro-articulos', name: 'Maestro de Artículos' },
+            { id: 'maestro-otros-articulos', name: 'Maestro Otros Artículos' },
+            { id: 'departamentos', name: 'Departamentos' },
+            { id: 'asignacion-permisos-usuario', name: 'Asignación Permisos Usuario' },
+          ]
+        },
         { id: 'purchase-request', name: 'Solicitud de Compras' },
         { id: 'purchase-request-report', name: 'Informe Solicitud de Compras' },
         { id: 'purchase-order', name: 'Orden de Compra' },

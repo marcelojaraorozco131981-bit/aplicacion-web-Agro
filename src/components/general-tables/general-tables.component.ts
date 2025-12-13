@@ -58,7 +58,7 @@ export class GeneralTablesComponent {
   // --- Master (Table) Computed & Forms ---
   sortedTables = computed(() => this.sort<GeneralTable>(this.tables(), this.tableSortColumn(), this.tableSortDirection()));
   tableForm = this.fb.group({
-    tableCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    tableCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
   });
 
@@ -68,7 +68,7 @@ export class GeneralTablesComponent {
     return this.sort<TableItem>(items, this.itemSortColumn(), this.itemSortDirection());
   });
   itemForm = this.fb.group({
-    itemCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    itemCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
   });
 
@@ -99,7 +99,7 @@ export class GeneralTablesComponent {
     this.tableFormMode.set('new');
     this.tableForm.reset();
     this.tableForm.get('tableCode')?.enable();
-    this.tableForm.get('tableCode')?.setValidators([Validators.required, Validators.pattern(/^[0-9]+$/), this.tableCodeExistsValidator.bind(this)]);
+    this.tableForm.get('tableCode')?.setValidators([Validators.required, Validators.pattern('^[0-9]+$'), this.tableCodeExistsValidator.bind(this)]);
     this.tableForm.updateValueAndValidity();
     this.isTablePanelOpen.set(true);
   }
@@ -168,7 +168,7 @@ export class GeneralTablesComponent {
     this.itemFormMode.set('new');
     this.itemForm.reset();
     this.itemForm.get('itemCode')?.enable();
-    this.itemForm.get('itemCode')?.setValidators([Validators.required, Validators.pattern(/^[0-9]+$/), this.itemCodeExistsValidator.bind(this)]);
+    this.itemForm.get('itemCode')?.setValidators([Validators.required, Validators.pattern('^[0-9]+$'), this.itemCodeExistsValidator.bind(this)]);
     this.itemForm.updateValueAndValidity();
     this.isItemPanelOpen.set(true);
   }

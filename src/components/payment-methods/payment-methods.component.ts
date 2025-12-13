@@ -56,9 +56,9 @@ export class PaymentMethodsComponent {
   });
 
   paymentMethodForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
-    paymentMethodCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    paymentMethodCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
   });
 
   openNewPanel(): void {
@@ -67,7 +67,7 @@ export class PaymentMethodsComponent {
     this.paymentMethodForm.get('code')?.enable();
     this.paymentMethodForm.get('code')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.paymentMethodForm.updateValueAndValidity();

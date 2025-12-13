@@ -55,7 +55,7 @@ export class CrewBossComponent {
   });
 
   crewBossForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     rut: ['', [Validators.required, CrewBossComponent.rutValidator]],
   });
@@ -66,7 +66,7 @@ export class CrewBossComponent {
     this.crewBossForm.get('code')?.enable();
     this.crewBossForm.get('code')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.crewBossForm.updateValueAndValidity();

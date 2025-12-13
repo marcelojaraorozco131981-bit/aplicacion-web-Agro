@@ -59,11 +59,11 @@ export class AfpComponent {
   });
 
   afpForm = this.fb.group({
-    afpCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-    previredCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    afpCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
+    previredCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     commission: [0, [Validators.required, Validators.min(0)]],
-    accountingAux: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    accountingAux: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     retirementCommission: [0, [Validators.required, Validators.min(0)]],
   });
 
@@ -73,7 +73,7 @@ export class AfpComponent {
     this.afpForm.get('afpCode')?.enable();
     this.afpForm.get('afpCode')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.afpForm.updateValueAndValidity();

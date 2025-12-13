@@ -116,7 +116,7 @@ export class FarmsComponent {
 
   // --- Form ---
   farmForm = this.fb.group({
-    farmCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    farmCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     address: ['', Validators.required],
     regionCode: [null as number | null, Validators.required],
@@ -135,7 +135,7 @@ export class FarmsComponent {
     this.farmForm.get('farmCode')?.enable();
     this.farmForm.get('farmCode')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.farmForm.updateValueAndValidity();

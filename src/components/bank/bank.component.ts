@@ -56,7 +56,7 @@ export class BankComponent {
   // --- Bank Computed Properties & Forms ---
   sortedBanks = computed(() => this.sort<Bank>(this.banks(), this.bankSortColumn(), this.bankSortDirection()));
   bankForm = this.fb.group({
-    bankCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    bankCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     isElectronicPayment: [false],
   });
@@ -67,7 +67,7 @@ export class BankComponent {
     return this.sort<Branch>(branches, this.branchSortColumn(), this.branchSortDirection());
   });
   branchForm = this.fb.group({
-    branchCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    branchCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
   });
 
@@ -98,7 +98,7 @@ export class BankComponent {
     this.bankFormMode.set('new');
     this.bankForm.reset({ isElectronicPayment: false });
     this.bankForm.get('bankCode')?.enable();
-    this.bankForm.get('bankCode')?.setValidators([Validators.required, Validators.pattern(/^[0-9]+$/), this.bankCodeExistsValidator.bind(this)]);
+    this.bankForm.get('bankCode')?.setValidators([Validators.required, Validators.pattern('^[0-9]+$'), this.bankCodeExistsValidator.bind(this)]);
     this.bankForm.updateValueAndValidity();
     this.isBankPanelOpen.set(true);
   }
@@ -256,7 +256,7 @@ export class BankComponent {
     this.branchFormMode.set('new');
     this.branchForm.reset();
     this.branchForm.get('branchCode')?.enable();
-    this.branchForm.get('branchCode')?.setValidators([Validators.required, Validators.pattern(/^[0-9]+$/), this.branchCodeExistsValidator.bind(this)]);
+    this.branchForm.get('branchCode')?.setValidators([Validators.required, Validators.pattern('^[0-9]+$'), this.branchCodeExistsValidator.bind(this)]);
     this.branchForm.updateValueAndValidity();
     this.isBranchPanelOpen.set(true);
   }

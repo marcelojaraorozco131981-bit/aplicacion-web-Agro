@@ -57,7 +57,7 @@ export class ControlUnitsComponent {
   });
 
   controlUnitForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     productionControl: [null as ControlUnit['productionControl'] | null, Validators.required],
     unitType: [null as ControlUnit['unitType'] | null, Validators.required],
@@ -85,7 +85,7 @@ export class ControlUnitsComponent {
     this.controlUnitForm.get('code')?.enable();
     this.controlUnitForm.get('code')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.controlUnitForm.updateValueAndValidity();

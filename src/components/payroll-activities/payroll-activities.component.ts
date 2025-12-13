@@ -56,7 +56,7 @@ export class PayrollActivitiesComponent {
   });
 
   activityForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required]
   });
 
@@ -66,7 +66,7 @@ export class PayrollActivitiesComponent {
     this.activityForm.get('code')?.enable();
     this.activityForm.get('code')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.activityForm.updateValueAndValidity();

@@ -68,7 +68,7 @@ export class WeeklyScheduleComponent {
   });
 
   scheduleForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     hoursMonday: [0, [Validators.required, Validators.min(0), Validators.max(24)]],
     hoursTuesday: [0, [Validators.required, Validators.min(0), Validators.max(24)]],
@@ -87,7 +87,7 @@ export class WeeklyScheduleComponent {
     this.scheduleForm.get('code')?.enable();
     this.scheduleForm.get('code')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.scheduleForm.updateValueAndValidity();

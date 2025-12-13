@@ -57,10 +57,10 @@ export class ProvidentFundsComponent {
   });
 
   providentFundForm = this.fb.group({
-    institutionCode: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    institutionCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     rate: [0, [Validators.required, Validators.min(0)]],
-    accountingAux: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    accountingAux: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
   });
 
   openNewPanel(): void {
@@ -69,7 +69,7 @@ export class ProvidentFundsComponent {
     this.providentFundForm.get('institutionCode')?.enable();
     this.providentFundForm.get('institutionCode')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.providentFundForm.updateValueAndValidity();

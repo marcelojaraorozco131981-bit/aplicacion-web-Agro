@@ -57,7 +57,7 @@ export class LaborComponent {
   });
 
   laborForm = this.fb.group({
-    code: [0, [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+    code: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     valoriza: [null as boolean | null, Validators.required],
     productiva: [null as boolean | null, Validators.required],
@@ -69,7 +69,7 @@ export class LaborComponent {
     this.laborForm.get('code')?.enable();
     this.laborForm.get('code')?.setValidators([
       Validators.required, 
-      Validators.pattern(/^[0-9]+$/),
+      Validators.pattern('^[0-9]+$'),
       this.codeExistsValidator.bind(this)
     ]);
     this.laborForm.updateValueAndValidity();
