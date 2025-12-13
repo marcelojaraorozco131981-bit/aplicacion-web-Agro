@@ -1,0 +1,236 @@
+<div class="container mx-auto">
+  <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+    <div class="flex items-center gap-4">
+        <h2 class="text-3xl font-bold text-gray-100">Maestro de Artículos</h2>
+        <select (change)="onCompanyChange($event)" class="bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+            <option [ngValue]="null">-- Seleccione una Empresa --</option>
+            @for (company of companies(); track company.id) {
+                <option [value]="company.id">{{ company.name }}</option>
+            }
+        </select>
+    </div>
+    @if (selectedCompanyId()) {
+        <div class="flex items-center gap-2">
+            <button (click)="exportToPdf()" class="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                Exportar a PDF
+            </button>
+            <button (click)="openNewPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                Nuevo Artículo
+            </button>
+        </div>
+    }
+  </div>
+
+  @if (selectedCompanyId()) {
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-700">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('familyName')" class="flex items-center gap-1.5 group">Familia</button></th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('itemCode')" class="flex items-center gap-1.5 group">Código Ítem</button></th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('name')" class="flex items-center gap-1.5 group">Nombre</button></th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('unitOfMeasureAbbreviation')" class="flex items-center gap-1.5 group">U.M.</button></th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('minStock')" class="flex items-center gap-1.5 group">Stock Mín.</button></th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('maxStock')" class="flex items-center gap-1.5 group">Stock Máx.</button></th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('reorderPoint')" class="flex items-center gap-1.5 group">Pto. Pedido</button></th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('waitingDays')" class="flex items-center gap-1.5 group">D. Carencia</button></th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('reentryHours')" class="flex items-center gap-1.5 group">H. Reingreso</button></th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('isActive')" class="flex items-center gap-1.5 group">Vigencia</button></th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+            @for (item of sortedItems(); track item.itemCode) {
+                <tr class="hover:bg-gray-700/50 transition-colors duration-200" [class.opacity-60]="!item.isActive">
+                <td class="px-6 py-4 whitespace-nowrap text-sm" [class.line-through]="!item.isActive">{{ item.familyName }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono text-emerald-400" [class.line-through]="!item.isActive">{{ item.itemCode }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm" [class.line-through]="!item.isActive">{{ item.name }}</td>
+                <td class="px-4 py-4 whitespace-nowrap font-mono text-xs" [class.line-through]="!item.isActive">{{ item.unitOfMeasureAbbreviation }}</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-mono" [class.line-through]="!item.isActive">{{ item.minStock }}</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-mono" [class.line-through]="!item.isActive">{{ item.maxStock }}</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-mono" [class.line-through]="!item.isActive">{{ item.reorderPoint }}</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-mono" [class.line-through]="!item.isActive">{{ item.waitingDays }}</td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-mono" [class.line-through]="!item.isActive">{{ item.reentryHours }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    @if(item.isActive) {
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Vigente</span>
+                    } @else {
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-600 text-gray-300">No Vigente</span>
+                    }
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button (click)="openEditPanel(item)" class="text-cyan-400 hover:text-cyan-300 p-2 rounded-md" title="Editar"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                    <button (click)="openVigenciaModal(item)" class="p-2 rounded-md ml-2" [class]="item.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'" [title]="item.isActive ? 'Desactivar' : 'Activar'">
+                    @if (item.isActive) { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg> }
+                    @else { <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C16.268 4.943 10.478 4.5 10 4.5c-1.107 0-2.262.193-3.442.574l-2.85-2.85z" clip-rule="evenodd" /><path d="M8.442 8.442a3 3 0 104.116 4.116l-4.116-4.116z" /></svg> }
+                    </button>
+                </td>
+                </tr>
+            } @empty {
+                <tr><td colspan="11" class="text-center py-8 text-gray-500">No hay artículos registrados para esta empresa.</td></tr>
+            }
+            </tbody>
+        </table>
+        </div>
+    </div>
+  } @else {
+    <div class="flex flex-col items-center justify-center h-64 bg-gray-800 rounded-lg border-2 border-dashed border-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M5 13h14M5 17h14M5 9h14" /></svg>
+        <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione una Empresa</p>
+        <p class="text-sm text-gray-500">Elija una empresa para ver y gestionar sus artículos.</p>
+    </div>
+  }
+</div>
+
+<!-- Slide-over Panel for New/Edit -->
+@if (isPanelOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60 transition-opacity" (click)="closePanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition ease-in-out duration-500" [class]="isPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="articleForm" (ngSubmit)="saveItem()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ formMode() === 'new' ? 'Nuevo Artículo' : 'Editar Artículo' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4 pb-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Empresa</label>
+              <input type="text" [value]="selectedCompanyName()" disabled class="mt-1 block w-full bg-gray-900 border-gray-700 rounded-md py-2 px-3 text-gray-400 opacity-70 cursor-not-allowed">
+            </div>
+            <div>
+              <label for="familyId" class="block text-sm font-medium text-gray-300">Familia</label>
+              <select id="familyId" formControlName="familyId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                  <option [ngValue]="null" disabled>Seleccione...</option>
+                  @for (family of allFamilies(); track family.id) { <option [ngValue]="family.id">{{ family.name }}</option> }
+              </select>
+            </div>
+            <div>
+              <label for="subFamilyId" class="block text-sm font-medium text-gray-300">Subfamilia</label>
+              <select id="subFamilyId" formControlName="subFamilyId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+                  <option [ngValue]="null" disabled>Seleccione...</option>
+                  @for (sub of filteredSubFamilies(); track sub.id) { <option [ngValue]="sub.id">{{ sub.name }}</option> }
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="itemCode" class="block text-sm font-medium text-gray-300">Código Ítem</label>
+                <input type="number" id="itemCode" formControlName="itemCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+                @if (articleForm.get('itemCode')?.hasError('codeExists')) { <p class="mt-1 text-xs text-red-400">Este código ya existe.</p> }
+              </div>
+            </div>
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-300">Nombre</label>
+              <input type="text" id="name" formControlName="name" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                 <div>
+                    <label for="unitOfMeasureId" class="block text-sm font-medium text-gray-300">Unidad de Medida</label>
+                    <select id="unitOfMeasureId" formControlName="unitOfMeasureId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                        <option [ngValue]="null" disabled>Seleccione...</option>
+                        @for (unit of allUnitsOfMeasure(); track unit.id) { <option [ngValue]="unit.id">{{ unit.name }} ({{unit.abbreviation}})</option> }
+                    </select>
+                </div>
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-300">Categoría</label>
+                    <input type="text" id="category" formControlName="category" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+            </div>
+             <div class="border-t border-gray-700 my-4"></div>
+            <fieldset class="space-y-4">
+                <legend class="text-base font-medium text-gray-200">Parámetros de Stock</legend>
+                 <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="minStock" class="block text-sm font-medium text-gray-300">Stock Mínimo</label>
+                        <input type="number" id="minStock" formControlName="minStock" step="0.01" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                     <div>
+                        <label for="maxStock" class="block text-sm font-medium text-gray-300">Stock Máximo</label>
+                        <input type="number" id="maxStock" formControlName="maxStock" step="0.01" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="reorderPoint" class="block text-sm font-medium text-gray-300">Punto de Pedido</label>
+                    <input type="number" id="reorderPoint" formControlName="reorderPoint" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+            </fieldset>
+
+            <div class="border-t border-gray-700 my-4"></div>
+            <fieldset class="space-y-4">
+                <legend class="text-base font-medium text-gray-200">Parámetros Fitosanitarios y Regulatorios</legend>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="activeIngredientId" class="block text-sm font-medium text-gray-300">Ingrediente Activo</label>
+                        <select id="activeIngredientId" formControlName="activeIngredientId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                            <option [ngValue]="null">Ninguno</option>
+                            @for (ing of allActiveIngredients(); track ing.id) { <option [ngValue]="ing.id">{{ ing.name }}</option> }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="speciesId" class="block text-sm font-medium text-gray-300">Especie</label>
+                        <select id="speciesId" formControlName="speciesId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                            <option [ngValue]="null">Ninguna</option>
+                            @for (spec of allSpecies(); track spec.id) { <option [ngValue]="spec.id">{{ spec.name }}</option> }
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="waitingDays" class="block text-sm font-medium text-gray-300">Días de Carencia</label>
+                        <input type="number" id="waitingDays" formControlName="waitingDays" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label for="reentryHours" class="block text-sm font-medium text-gray-300">Horas de Reingreso</label>
+                        <input type="number" id="reentryHours" formControlName="reentryHours" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                </div>
+                 <div>
+                    <label for="chargeableCode" class="block text-sm font-medium text-gray-300">Código Imputable</label>
+                    <input type="number" id="chargeableCode" formControlName="chargeableCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4 items-center pt-2">
+                    <fieldset>
+                        <legend class="text-sm font-medium text-gray-300 mb-2">Vigencia SAG</legend>
+                        <div class="flex items-center gap-x-4">
+                            <div class="flex items-center gap-x-2"><input id="hasValidity-si" type="radio" [value]="true" formControlName="hasValidity" class="h-4 w-4 border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="hasValidity-si" class="block text-sm font-medium text-gray-300">Sí</label></div>
+                            <div class="flex items-center gap-x-2"><input id="hasValidity-no" type="radio" [value]="false" formControlName="hasValidity" class="h-4 w-4 border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="hasValidity-no" class="block text-sm font-medium text-gray-300">No</label></div>
+                        </div>
+                    </fieldset>
+                    <div>
+                        <label for="validityDate" class="block text-sm font-medium text-gray-300">Fecha Vigencia</label>
+                        <input type="date" id="validityDate" formControlName="validityDate" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    </div>
+                </div>
+            </fieldset>
+
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closePanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="articleForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Confirmation Modal -->
+@if (isConfirmModalOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-white">{{ itemToToggleVigencia()?.isActive ? 'Desactivar Artículo' : 'Reactivar Artículo' }}</h3>
+            <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ itemToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} el artículo "{{ itemToToggleVigencia()?.name }}"?</p>
+          </div>
+          <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+            <button type="button" (click)="confirmToggleVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="itemToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">{{ itemToToggleVigencia()?.isActive ? 'Sí, desactivar' : 'Sí, reactivar' }}</button>
+            <button type="button" (click)="closeConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
