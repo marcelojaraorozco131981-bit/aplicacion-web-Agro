@@ -112,6 +112,8 @@ export class MaestroArticulosComponent implements OnInit {
   isPanelOpen = signal(false);
   isConfirmModalOpen = signal(false);
   itemToToggleVigencia = signal<Articulo | null>(null);
+  isDeleteModalOpen = signal(false);
+  itemToDelete = signal<Articulo | null>(null);
   formMode = signal<'new' | 'edit'>('new');
   sortColumn = signal<keyof ReturnType<this['displayItems']>[0]>('itemCode');
   sortDirection = signal<'asc' | 'desc'>('asc');
@@ -300,8 +302,26 @@ export class MaestroArticulosComponent implements OnInit {
     this.closeConfirmModal();
   }
 
+  openDeleteModal(item: Articulo): void {
+    this.itemToDelete.set(item);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  confirmDeleteItem(): void {
+    const itemToDelete = this.itemToDelete();
+    if (itemToDelete) {
+      this.allItems.update(items =>
+        items.filter(item =>
+          !(item.itemCode === itemToDelete.itemCode && item.companyId === itemToDelete.companyId)
+        )
+      );
+    }
+    this.closeDeleteModal();
+  }
+
   closePanel = () => this.isPanelOpen.set(false);
   closeConfirmModal = () => { this.isConfirmModalOpen.set(false); this.itemToToggleVigencia.set(null); };
+  closeDeleteModal = () => { this.isDeleteModalOpen.set(false); this.itemToDelete.set(null); };
   
   onSort(column: keyof ReturnType<this['displayItems']>[0]): void {
     if (this.sortColumn() === column) this.sortDirection.update(dir => (dir === 'asc' ? 'desc' : 'asc'));
