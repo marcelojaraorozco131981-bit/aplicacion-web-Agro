@@ -11,7 +11,6 @@ import { BudgetComponent } from './components/budget/budget.component';
 import { ContractorsComponent } from './components/contractors/contractors.component';
 import { BpaComponent } from './components/bpa/bpa.component';
 import { UsersComponent } from './components/users/users.component';
-import { ParametersComponent } from './components/parameters/parameters.component';
 import { PayrollActivitiesComponent } from './components/payroll-activities/payroll-activities.component';
 import { GeneralTablesComponent } from './components/general-tables/general-tables.component';
 import { SettlementParametersComponent } from './components/settlement-parameters/settlement-parameters.component';
@@ -54,7 +53,6 @@ import { BudgetVsCostTableComponent } from './components/budget-vs-cost-table/bu
 import { BudgetaryControlComponent } from './components/budgetary-control/budgetary-control.component';
 import { CompaniesComponent } from './components/companies/companies.component';
 import { SpeciesVarietyComponent } from './components/species-variety/species-variety.component';
-import { GeneralFarmsComponent } from './components/general-farms/general-farms.component';
 import { LandTypesComponent } from './components/land-types/land-types.component';
 import { CostCentersComponent } from './components/cost-centers/cost-centers.component';
 import { GeographicLocationComponent } from './components/geographic-location/geographic-location.component';
@@ -148,7 +146,6 @@ interface NavItem {
     ContractorsComponent,
     BpaComponent,
     UsersComponent,
-    ParametersComponent,
     PayrollActivitiesComponent,
     GeneralTablesComponent,
     SettlementParametersComponent,
@@ -191,7 +188,6 @@ interface NavItem {
     BudgetaryControlComponent,
     CompaniesComponent,
     SpeciesVarietyComponent,
-    GeneralFarmsComponent,
     LandTypesComponent,
     CostCentersComponent,
     GeographicLocationComponent,
@@ -517,10 +513,9 @@ export class AppComponent {
       id: 'parameters-group',
       name: 'Parámetros Generales',
       children: [
-        { id: 'general-parameters', name: 'Configuración General'},
         { id: 'companies', name: 'Empresas'},
         { id: 'species-variety', name: 'Especie Variedad'},
-        { id: 'general-farms', name: 'Fundos'},
+        { id: 'farms', name: 'Fundos'},
         { id: 'land-types', name: 'Tipos de Terrenos'},
         { id: 'cost-centers', name: 'Centros de Costos'},
         { id: 'geographic-location', name: 'Ubicacion Geografica'},

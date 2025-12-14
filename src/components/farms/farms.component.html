@@ -32,6 +32,8 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('farmCode')" class="flex items-center gap-1.5 group">Código</button></th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('description')" class="flex items-center gap-1.5 group">Descripción</button></th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('address')" class="flex items-center gap-1.5 group">Dirección</button></th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('regionCode')" class="flex items-center gap-1.5 group">Cód. Región</button></th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('communeCode')" class="flex items-center gap-1.5 group">Cód. Comuna</button></th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('isActive')" class="flex items-center gap-1.5 group">Vigencia</button></th>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
             </tr>
@@ -42,6 +44,8 @@
                 <td class="px-6 py-4 whitespace-nowrap font-mono text-emerald-400" [class.line-through]="!farm.isActive">{{ farm.farmCode }}</td>
                 <td class="px-6 py-4 whitespace-nowrap" [class.line-through]="!farm.isActive">{{ farm.description }}</td>
                 <td class="px-6 py-4 whitespace-nowrap" [class.line-through]="!farm.isActive">{{ farm.address }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono" [class.line-through]="!farm.isActive">{{ farm.regionCode }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono" [class.line-through]="!farm.isActive">{{ farm.communeCode }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     @if(farm.isActive) {
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900 text-green-300">Vigente</span>
@@ -65,7 +69,7 @@
                 </td>
                 </tr>
             } @empty {
-                <tr><td colspan="5" class="text-center py-8 text-gray-500">No hay fundos registrados para esta empresa.</td></tr>
+                <tr><td colspan="7" class="text-center py-8 text-gray-500">No hay fundos registrados para esta empresa.</td></tr>
             }
             </tbody>
         </table>
@@ -93,13 +97,18 @@
           <div class="relative mt-6 flex-1 px-4 sm:px-6">
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-300">Empresa</label>
-                <input type="text" [value]="selectedCompanyName()" disabled class="mt-1 block w-full bg-gray-900 border-gray-700 rounded-md py-2 px-3 text-gray-400 opacity-70 cursor-not-allowed">
+                <label for="companyId" class="block text-sm font-medium text-gray-300">Empresa</label>
+                <select id="companyId" formControlName="companyId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <option [ngValue]="null" disabled>Seleccione...</option>
+                    @for (company of companies(); track company.id) {
+                        <option [ngValue]="company.id">{{ company.name }}</option>
+                    }
+                </select>
               </div>
               <div>
                 <label for="farmCode" class="block text-sm font-medium text-gray-300">Código Fundo</label>
                 <input type="number" id="farmCode" formControlName="farmCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
-                 @if (farmForm.get('farmCode')?.hasError('codeExists')) { <p class="mt-1 text-xs text-red-400">Este código ya existe para la empresa.</p> }
+                 @if (farmForm.get('farmCode')?.hasError('codeExists') && farmForm.get('farmCode')?.touched) { <p class="mt-1 text-xs text-red-400">Este código ya existe para la empresa.</p> }
               </div>
               <div>
                 <label for="description" class="block text-sm font-medium text-gray-300">Descripción (Nombre)</label>
@@ -109,20 +118,14 @@
                 <label for="address" class="block text-sm font-medium text-gray-300">Dirección</label>
                 <input type="text" id="address" formControlName="address" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
               </div>
-               <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-2 gap-4">
                  <div>
-                    <label for="regionCode" class="block text-sm font-medium text-gray-300">Región</label>
-                    <select id="regionCode" formControlName="regionCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
-                        <option [value]="null" disabled>Seleccione...</option>
-                        @for (region of regions(); track region.id) { <option [value]="region.id">{{region.name}}</option> }
-                    </select>
+                    <label for="regionCode" class="block text-sm font-medium text-gray-300">Código Región</label>
+                    <input type="number" id="regionCode" formControlName="regionCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
                 </div>
                  <div>
-                    <label for="communeCode" class="block text-sm font-medium text-gray-300">Comuna</label>
-                    <select id="communeCode" formControlName="communeCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50" [disabled]="!farmForm.get('regionCode')?.value">
-                        <option [value]="null" disabled>Seleccione...</option>
-                        @for (commune of filteredCommunes(); track commune.id) { <option [value]="commune.id">{{commune.name}}</option> }
-                    </select>
+                    <label for="communeCode" class="block text-sm font-medium text-gray-300">Código Comuna</label>
+                    <input type="number" id="communeCode" formControlName="communeCode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
                 </div>
                </div>
             </div>

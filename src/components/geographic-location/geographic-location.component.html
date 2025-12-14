@@ -1,0 +1,169 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+  <!-- Master Panel (Regions) -->
+  <div class="flex flex-col">
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-100">Regiones</h2>
+      <div class="flex items-center gap-2">
+        <button (click)="exportToPdf()" class="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+          Exportar
+        </button>
+        <button (click)="openNewRegionPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+          Nueva Región
+        </button>
+      </div>
+    </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden flex-1">
+      <div class="overflow-y-auto h-full">
+        @for (region of regions(); track region.code) {
+        <div (click)="selectRegion(region)" class="flex justify-between items-center px-4 py-3 cursor-pointer border-b border-gray-700 last:border-b-0 transition-colors duration-200" [class.bg-emerald-900/50]="selectedRegion()?.code === region.code" [class.hover:bg-gray-700/50]="selectedRegion()?.code !== region.code" [class.opacity-60]="!region.isActive">
+          <div class="flex items-center gap-4">
+            <span class="font-mono text-sm text-gray-400 w-8 text-center">{{ region.code }}</span>
+            <span class="font-medium" [class.line-through]="!region.isActive">{{ region.name }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+             @if(region.isActive) { <span class="text-green-400 text-xs font-semibold">Vigente</span> } @else { <span class="text-gray-400 text-xs">No Vigente</span> }
+            <button (click)="openEditRegionPanel(region); $event.stopPropagation()" class="text-cyan-400 hover:text-cyan-300 p-1 rounded-md"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+            <button (click)="openRegionVigenciaModal(region); $event.stopPropagation()" class="p-1 rounded-md" [class]="region.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+          </div>
+        </div>
+        } @empty { <div class="p-6 text-center text-gray-500 text-sm">No hay regiones registradas.</div>}
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Panel (Communes) -->
+  <div class="flex flex-col">
+    @if (selectedRegion()) {
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-100 truncate">Comunas de "{{selectedRegion()?.name}}"</h2>
+      <button (click)="openNewCommunePanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-200 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+        Nueva Comuna
+      </button>
+    </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden flex-1">
+      <div class="overflow-y-auto h-full">
+        @for (commune of selectedRegion()?.communes ?? []; track commune.code) {
+        <div class="flex justify-between items-center px-4 py-3 border-b border-gray-700 last:border-b-0" [class.opacity-60]="!commune.isActive">
+          <div class="flex items-center gap-4">
+            <span class="font-mono text-sm text-gray-400 w-8 text-center">{{ commune.code }}</span>
+            <span class="font-medium" [class.line-through]="!commune.isActive">{{ commune.name }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            @if(commune.isActive) { <span class="text-green-400 text-xs font-semibold">Vigente</span> } @else { <span class="text-gray-400 text-xs">No Vigente</span> }
+            <button (click)="openEditCommunePanel(commune)" class="text-cyan-400 hover:text-cyan-300 p-1 rounded-md"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+            <button (click)="openCommuneVigenciaModal(commune)" class="p-1 rounded-md" [class]="commune.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+          </div>
+        </div>
+        } @empty { <div class="p-6 text-center text-gray-500 text-sm">No hay comunas para esta región.</div> }
+      </div>
+    </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center h-full bg-gray-800 rounded-lg border-2 border-dashed border-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" /></svg>
+        <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione una Región</p>
+        <p class="text-sm text-gray-500">Elija una región de la lista para ver sus comunas.</p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Region Panel -->
+@if (isRegionPanelOpen()) {
+  <div class="relative z-40">
+    <div class="fixed inset-0 bg-black/60" (click)="closeRegionPanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition ease-in-out duration-500" [class]="isRegionPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="regionForm" (ngSubmit)="saveRegion()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ regionFormMode() === 'new' ? 'Nueva Región' : 'Editar Región' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código Región</label>
+              <input type="number" formControlName="code" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+               @if (regionForm.get('code')?.hasError('codeExists')) { <p class="mt-1 text-xs text-red-400">Este código ya existe.</p> }
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Nombre</label>
+              <input type="text" formControlName="name" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeRegionPanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="regionForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+<!-- Region Vigencia Modal -->
+@if (isRegionConfirmModalOpen()) {
+<div class="relative z-50">
+  <div class="fixed inset-0 bg-black/60"></div>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-white">{{ regionToToggleVigencia()?.isActive ? 'Desactivar Región' : 'Reactivar Región' }}</h3>
+          <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ regionToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} la región "{{ regionToToggleVigencia()?.name }}"?</p>
+        </div>
+        <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+          <button type="button" (click)="confirmToggleRegionVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="regionToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">Confirmar</button>
+          <button type="button" (click)="closeRegionConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Commune Panel -->
+@if (isCommunePanelOpen()) {
+  <div class="relative z-40">
+    <div class="fixed inset-0 bg-black/60" (click)="closeCommunePanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition ease-in-out duration-500" [class]="isCommunePanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="communeForm" (ngSubmit)="saveCommune()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ communeFormMode() === 'new' ? 'Nueva Comuna' : 'Editar Comuna' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código Comuna</label>
+              <input type="number" formControlName="code" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+               @if (communeForm.get('code')?.hasError('codeExists')) { <p class="mt-1 text-xs text-red-400">Este código ya existe para la región.</p> }
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Nombre</label>
+              <input type="text" formControlName="name" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeCommunePanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="communeForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+<!-- Commune Vigencia Modal -->
+@if (isCommuneConfirmModalOpen()) {
+<div class="relative z-50">
+  <div class="fixed inset-0 bg-black/60"></div>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-white">{{ communeToToggleVigencia()?.isActive ? 'Desactivar Comuna' : 'Reactivar Comuna' }}</h3>
+          <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ communeToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} la comuna "{{ communeToToggleVigencia()?.name }}"?</p>
+        </div>
+        <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+          <button type="button" (click)="confirmToggleCommuneVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="communeToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">Confirmar</button>
+          <button type="button" (click)="closeCommuneConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

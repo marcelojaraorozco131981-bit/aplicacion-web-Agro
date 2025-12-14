@@ -44,6 +44,7 @@ export class FarmsComponent {
     { id: 1, name: 'Agrícola San José' },
     { id: 2, name: 'Exportadora del Valle' }
   ]);
+
   regions = signal<Region[]>([
       {id: 1, name: 'Región de Valparaíso'},
       {id: 2, name: 'Región Metropolitana'},
@@ -56,7 +57,7 @@ export class FarmsComponent {
       {id: 301, regionId: 3, name: 'Rancagua'},
       {id: 302, regionId: 3, name: 'Rengo'},
   ]);
-
+  
   // --- State ---
   allFarms = signal<Farm[]>([
     { companyId: 1, farmCode: 101, description: 'Fundo El Roble', address: 'Camino El Roble Km. 5', regionCode: 1, communeCode: 101, isActive: true },
@@ -108,19 +109,14 @@ export class FarmsComponent {
     });
   });
 
-  filteredCommunes = computed(() => {
-      const regionId = this.farmForm.get('regionCode')?.value;
-      if(!regionId) return [];
-      return this.communes().filter(c => c.regionId === Number(regionId));
-  });
-
   // --- Form ---
   farmForm = this.fb.group({
+    companyId: [null as number | null, Validators.required],
     farmCode: [0, [Validators.required, Validators.pattern('^[0-9]+$')]],
     description: ['', Validators.required],
     address: ['', Validators.required],
-    regionCode: [null as number | null, Validators.required],
-    communeCode: [null as number | null, Validators.required],
+    regionCode: [null as number | null, [Validators.required, Validators.pattern('^[0-9]+$')]],
+    communeCode: [null as number | null, [Validators.required, Validators.pattern('^[0-9]+$')]],
   });
 
   // --- Methods ---
@@ -133,6 +129,8 @@ export class FarmsComponent {
     this.formMode.set('new');
     this.farmForm.reset();
     this.farmForm.get('farmCode')?.enable();
+    this.farmForm.get('companyId')?.enable();
+    this.farmForm.patchValue({ companyId: this.selectedCompanyId() });
     this.farmForm.get('farmCode')?.setValidators([
       Validators.required, 
       Validators.pattern('^[0-9]+$'),
@@ -147,18 +145,20 @@ export class FarmsComponent {
     this.farmForm.reset();
     this.farmForm.patchValue(farm);
     this.farmForm.get('farmCode')?.disable();
+    this.farmForm.get('companyId')?.disable();
     this.farmForm.get('farmCode')?.clearValidators();
     this.farmForm.updateValueAndValidity();
     this.isPanelOpen.set(true);
   }
 
   saveFarm(): void {
-    if (this.farmForm.invalid || !this.selectedCompanyId()) {
+    if (this.farmForm.invalid) {
+      this.farmForm.markAllAsTouched();
       return;
     }
 
     const formValue = this.farmForm.getRawValue();
-    const companyId = this.selectedCompanyId()!;
+    const companyId = Number(formValue.companyId);
 
     if (this.formMode() === 'new') {
       const newFarm: Farm = {
@@ -221,12 +221,12 @@ export class FarmsComponent {
 
   codeExistsValidator(control: AbstractControl): ValidationErrors | null {
     const code = Number(control.value);
-    const companyId = this.selectedCompanyId();
+    const companyId = this.farmForm?.get('companyId')?.value;
     if (!companyId) return null;
     const codeExists = this.allFarms().some(f => f.companyId === companyId && f.farmCode === code);
     return codeExists ? { codeExists: true } : null;
   }
-
+  
   getRegionName(id: number): string {
     return this.regions().find(r => r.id === id)?.name || 'N/A';
   }
@@ -247,8 +247,8 @@ export class FarmsComponent {
         f.farmCode, 
         f.description, 
         f.address,
-        this.getRegionName(f.regionCode),
-        this.getCommuneName(f.communeCode),
+        `${f.regionCode} - ${this.getRegionName(f.regionCode)}`,
+        `${f.communeCode} - ${this.getCommuneName(f.communeCode)}`,
         f.isActive ? 'Vigente' : 'No Vigente'
     ]);
 
