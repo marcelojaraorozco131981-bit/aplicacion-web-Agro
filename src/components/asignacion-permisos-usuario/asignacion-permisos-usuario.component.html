@@ -1,0 +1,135 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+  <!-- Master Panel (Users) -->
+  <div class="lg:col-span-1 flex flex-col">
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-100">Usuarios</h2>
+    </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden flex-1">
+      <div class="overflow-y-auto h-full">
+        @for (user of users(); track user.id) {
+          <div 
+            (click)="selectUser(user)"
+            class="flex justify-between items-start px-4 py-3 cursor-pointer border-b border-gray-700 last:border-b-0 transition-colors duration-200"
+            [class.bg-emerald-900/50]="selectedUser()?.id === user.id"
+            [class.hover:bg-gray-700/50]="selectedUser()?.id !== user.id">
+            <div>
+              <p class="font-medium text-gray-100">{{ user.name }}</p>
+              <p class="text-sm text-gray-400">{{ user.email }}</p>
+            </div>
+          </div>
+        } @empty {
+          <div class="p-6 text-center text-gray-500">No hay usuarios registrados.</div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Panel (Permissions) -->
+  <div class="lg:col-span-2 flex flex-col">
+    @if (selectedUser()) {
+    <form [formGroup]="permissionForm" (ngSubmit)="savePermissions()">
+      <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-100 truncate">
+          Permisos para: <span class="text-emerald-400">{{ selectedUser()?.name }}</span>
+        </h2>
+        <button 
+          type="submit" 
+          [disabled]="permissionForm.invalid || permissionForm.pristine || isSaving()"
+          class="flex items-center justify-center min-w-[150px] gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            @if(isSaving()) {
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>Guardando...</span>
+            } @else if(saveSuccess()) {
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                <span>¡Guardado!</span>
+            } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v1H5V4zM5 7h10v9a2 2 0 01-2 2H7a2 2 0 01-2-2V7z" /><path d="M7 9a1 1 0 000 2h6a1 1 0 100-2H7z" /></svg>
+                <span>Guardar</span>
+            }
+        </button>
+      </div>
+      <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6 space-y-8 overflow-y-auto">
+        <!-- Roles -->
+        <fieldset>
+          <legend class="text-lg font-semibold text-emerald-400 mb-4">Roles de Compra</legend>
+          <div class="flex flex-wrap gap-x-8 gap-y-4">
+            <div class="flex items-center gap-x-3"><input type="checkbox" id="esSolicitador" formControlName="esSolicitador" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="esSolicitador" class="text-sm font-medium text-gray-300">Solicitador</label></div>
+            <div class="flex items-center gap-x-3"><input type="checkbox" id="esComprador" formControlName="esComprador" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="esComprador" class="text-sm font-medium text-gray-300">Comprador</label></div>
+            <div class="flex items-center gap-x-3"><input type="checkbox" id="esAprobador" formControlName="esAprobador" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="esAprobador" class="text-sm font-medium text-gray-300">Aprobador</label></div>
+          </div>
+        </fieldset>
+
+        <!-- Permisos de Aprobación -->
+        <fieldset>
+          <legend class="text-lg font-semibold text-emerald-400 mb-4">Permisos de Aprobación</legend>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+                <label for="montoAprobacion" class="block text-sm font-medium text-gray-300 mb-2">Monto Máximo de Aprobación</label>
+                <input id="montoAprobacion" type="number" formControlName="montoAprobacion" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+            <div class="space-y-3 pt-3 sm:pt-9">
+              <div class="flex items-center gap-x-3"><input type="checkbox" id="aprobacionGerencial" formControlName="aprobacionGerencial" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="aprobacionGerencial" class="text-sm font-medium text-gray-300">Aprobación Gerencial</label></div>
+              <div class="flex items-center gap-x-3"><input type="checkbox" id="aprobacionPorDefecto" formControlName="aprobacionPorDefecto" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="aprobacionPorDefecto" class="text-sm font-medium text-gray-300">Aprobación por Defecto</label></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Visibilidad -->
+        <fieldset>
+          <legend class="text-lg font-semibold text-emerald-400 mb-4">Visibilidad de Documentos</legend>
+          <div class="flex flex-wrap gap-x-8 gap-y-4">
+              <div class="flex items-center gap-x-3"><input type="checkbox" id="verTodasSC" formControlName="verTodasSC" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="verTodasSC" class="text-sm font-medium text-gray-300">Ver todas las Solicitudes de Compra (SC)</label></div>
+              <div class="flex items-center gap-x-3"><input type="checkbox" id="verTodasOC" formControlName="verTodasOC" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500"><label for="verTodasOC" class="text-sm font-medium text-gray-300">Ver todas las Órdenes de Compra (OC)</label></div>
+          </div>
+        </fieldset>
+
+        <!-- Alcance por Empresa -->
+        <fieldset formArrayName="empresas">
+            <legend class="text-lg font-semibold text-emerald-400 mb-4">Acceso por Empresa</legend>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                @for(company of companies(); track company.id; let i = $index) {
+                    <div class="flex items-center gap-x-3">
+                        <input type="checkbox" [id]="'empresa-'+i" [formControlName]="i" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500">
+                        <label [for]="'empresa-'+i" class="text-sm font-medium text-gray-300">{{ company.name }}</label>
+                    </div>
+                }
+            </div>
+        </fieldset>
+        
+         <!-- Alcance por Departamento -->
+        <fieldset formArrayName="departamentos">
+            <legend class="text-lg font-semibold text-emerald-400 mb-4">Acceso por Departamento</legend>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                @for(dept of departments(); track dept.code; let i = $index) {
+                    <div class="flex items-center gap-x-3">
+                        <input type="checkbox" [id]="'dept-'+i" [formControlName]="i" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500">
+                        <label [for]="'dept-'+i" class="text-sm font-medium text-gray-300">{{ dept.description }}</label>
+                    </div>
+                }
+            </div>
+        </fieldset>
+
+         <!-- Alcance por Tipo de Compra -->
+        <fieldset formArrayName="tiposCompra">
+            <legend class="text-lg font-semibold text-emerald-400 mb-4">Acceso por Tipo de Compra</legend>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                @for(purchaseType of purchaseTypes(); track purchaseType.id; let i = $index) {
+                    <div class="flex items-center gap-x-3">
+                        <input type="checkbox" [id]="'pt-'+i" [formControlName]="i" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500">
+                        <label [for]="'pt-'+i" class="text-sm font-medium text-gray-300">{{ purchaseType.name }}</label>
+                    </div>
+                }
+            </div>
+        </fieldset>
+
+      </div>
+    </form>
+    } @else {
+      <div class="flex flex-col items-center justify-center h-full bg-gray-800 rounded-lg border-2 border-dashed border-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z" /></svg>
+        <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione un Usuario</p>
+        <p class="text-sm text-gray-500 text-center">Elija un usuario de la lista de la izquierda para ver y gestionar sus permisos de compra.</p>
+      </div>
+    }
+  </div>
+</div>
