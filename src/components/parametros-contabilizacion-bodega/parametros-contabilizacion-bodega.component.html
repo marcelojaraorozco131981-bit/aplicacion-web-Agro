@@ -1,56 +1,129 @@
-<div class="w-full max-w-screen-md mx-auto">
-  <form [formGroup]="paramsForm" (ngSubmit)="saveChanges()">
-    <!-- Header -->
-    <div class="flex flex-wrap gap-4 justify-between items-center mb-8">
-      <div>
-        <h3 class="text-xl font-semibold text-gray-200">Parámetros de Contabilización (Bodega)</h3>
-        <p class="mt-1 text-sm text-gray-400">Configuración de cuentas para movimientos de bodega.</p>
-      </div>
-       <button 
-        type="submit" 
-        [disabled]="paramsForm.invalid || paramsForm.pristine || isSaving()"
-        class="flex items-center justify-center min-w-[160px] gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-        @if(isSaving()) {
-            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span>Guardando...</span>
-        } @else if(saveSuccess()) {
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-            <span>¡Guardado!</span>
-        } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v1H5V4zM5 7h10v9a2 2 0 01-2 2H7a2 2 0 01-2-2V7z" /><path d="M7 9a1 1 0 000 2h6a1 1 0 100-2H7z" /></svg>
-            <span>Guardar Cambios</span>
-        }
+<div class="container mx-auto">
+  <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+    <h3 class="text-xl font-semibold text-gray-200">Parámetros de Contabilización de Bodega</h3>
+    <div class="flex items-center gap-2">
+      <button (click)="exportToPdf()" class="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+        Exportar
+      </button>
+      <button (click)="openNewPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+        Nuevo Parámetro
       </button>
     </div>
+  </div>
 
-    <!-- Main Card -->
-    <div class="bg-gray-800/50 border border-gray-700/50 rounded-xl shadow-lg p-6 lg:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            <div class="form-field">
-                <label for="cuentaExistencias">Cuenta de Existencias</label>
-                <input type="text" id="cuentaExistencias" formControlName="cuentaExistencias">
-            </div>
-             <div class="form-field">
-                <label for="cuentaCostoVenta">Cuenta Costo de Venta</label>
-                <input type="text" id="cuentaCostoVenta" formControlName="cuentaCostoVenta">
-            </div>
-             <div class="form-field">
-                <label for="cuentaConsumoInterno">Cuenta Consumo Interno</label>
-                <input type="text" id="cuentaConsumoInterno" formControlName="cuentaConsumoInterno">
-            </div>
-
-            <div class="md:col-span-2 flex items-center pt-4">
-              <input id="utilizaCentroCosto" type="checkbox" formControlName="utilizaCentroCosto" class="h-4 w-4 rounded border-gray-600 bg-gray-900 text-emerald-600 focus:ring-emerald-500">
-              <label for="utilizaCentroCosto" class="ml-3 block text-sm font-medium text-gray-300">Utiliza Centro de Costo en Movimientos</label>
-            </div>
-        </div>
+  <div class="bg-gray-800/50 rounded-lg shadow-lg border border-gray-700/50 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-700/50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('tipoMovimientoName')" class="flex items-center gap-1.5 group">Tipo Movimiento</button></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('familiaName')" class="flex items-center gap-1.5 group">Familia</button></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('subFamiliaName')" class="flex items-center gap-1.5 group">Subfamilia</button></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('ctaDebe')" class="flex items-center gap-1.5 group">Cta. Debe</button></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('ctaHaber')" class="flex items-center gap-1.5 group">Cta. Haber</button></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('ctaContableName')" class="flex items-center gap-1.5 group">Cta. Contable</button></th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+          @for (item of sortedItems(); track item.id) {
+            <tr class="hover:bg-gray-700/50">
+              <td class="px-4 py-3 whitespace-nowrap text-sm">{{ item.tipoMovimientoName }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">{{ item.familiaName }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">{{ item.subFamiliaName }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm font-mono text-cyan-400">{{ item.ctaDebe }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm font-mono text-cyan-400">{{ item.ctaHaber }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm">{{ item.ctaContableName }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                <button (click)="openEditPanel(item)" class="text-cyan-400 hover:text-cyan-300 p-2 rounded-md"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                <button (click)="openDeleteModal(item)" class="text-red-500 hover:text-red-400 p-2 rounded-md ml-2" title="Eliminar">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7" class="text-center py-8 text-gray-500">No hay parámetros de contabilización registrados.</td></tr>
+          }
+        </tbody>
+      </table>
     </div>
-  </form>
+  </div>
 </div>
 
-<style>
-  .form-field { @apply flex flex-col; }
-  .form-field label { @apply block text-sm font-medium text-gray-400 mb-2; }
-  .form-field input { @apply block w-full bg-gray-900/70 border-2 border-gray-600/80 rounded-lg shadow-sm py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 sm:text-sm transition-all duration-200; }
-  .form-field input:hover { @apply border-gray-500; }
-</style>
+<!-- Slide-over Panel -->
+@if (isPanelOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60" (click)="closePanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-lg transform transition" [class]="isPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="paramForm" (ngSubmit)="saveItem()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ formMode() === 'new' ? 'Nuevo Parámetro' : 'Editar Parámetro' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Tipo de Movimiento</label>
+              <select formControlName="tipoMovimientoId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500"><option [ngValue]="null" disabled>Seleccione...</option>@for(tm of tiposMovimiento();track tm.id){<option [value]="tm.id">{{ tm.name }}</option>}</select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-300">Familia</label>
+                <select formControlName="familiaId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500"><option [ngValue]="null">Todas</option>@for(f of familias();track f.id){<option [ngValue]="f.id">{{ f.name }}</option>}</select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300">Subfamilia</label>
+                <select formControlName="subFamiliaId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50"><option [ngValue]="null">Todas</option>@for(sf of filteredSubFamilias();track sf.id){<option [ngValue]="sf.id">{{ sf.name }}</option>}</select>
+              </div>
+            </div>
+             <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-300">Cta. Debe</label>
+                <input type="text" formControlName="ctaDebe" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300">Cta. Haber</label>
+                <input type="text" formControlName="ctaHaber" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+              </div>
+            </div>
+             <div>
+              <label class="block text-sm font-medium text-gray-300">Cuenta Contable</label>
+              <select formControlName="ctaContableId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500"><option [ngValue]="null" disabled>Seleccione...</option>@for(cc of cuentasContables();track cc.id){<option [value]="cc.id">{{ cc.name }}</option>}</select>
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closePanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="paramForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (isDeleteModalOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+          <div class="p-6">
+             <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-900/50 sm:mx-0 sm:h-10 sm:w-10">
+                <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+              </div>
+              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <h3 class="text-lg font-semibold text-white">Eliminar Parámetro</h3>
+                <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas eliminar este parámetro de contabilización? Esta acción no se puede deshacer.</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+            <button type="button" (click)="confirmDeleteItem()" class="w-full sm:w-auto sm:ml-3 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500">Sí, eliminar</button>
+            <button type="button" (click)="closeDeleteModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
