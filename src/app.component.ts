@@ -122,6 +122,10 @@ import { MaestroArticulosComponent } from './components/maestro-articulos/maestr
 import { MaestroOtrosArticulosComponent } from './components/maestro-otros-articulos/maestro-otros-articulos.component';
 import { DepartamentosComponent } from './components/departamentos/departamentos.component';
 import { AsignacionPermisosUsuarioComponent } from './components/asignacion-permisos-usuario/asignacion-permisos-usuario.component';
+import { IngredientesActivosComponent } from './components/ingredientes-activos/ingredientes-activos.component';
+import { UnidadesMedidaComponent } from './components/unidades-medida/unidades-medida.component';
+import { GestionBodegasComponent } from './components/gestion-bodegas/gestion-bodegas.component';
+import { ParametrosContabilizacionBodegaComponent } from './components/parametros-contabilizacion-bodega/parametros-contabilizacion-bodega.component';
 
 
 interface NavItem {
@@ -257,6 +261,10 @@ interface NavItem {
     MaestroOtrosArticulosComponent,
     DepartamentosComponent,
     AsignacionPermisosUsuarioComponent,
+    IngredientesActivosComponent,
+    UnidadesMedidaComponent,
+    GestionBodegasComponent,
+    ParametrosContabilizacionBodegaComponent,
   ],
 })
 export class AppComponent {

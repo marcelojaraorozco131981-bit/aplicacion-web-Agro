@@ -1,0 +1,233 @@
+<div class="container mx-auto">
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold text-gray-200">Bodegas y Niveles de Almacenamiento</h3>
+        <select (change)="onCompanyChange($event)" class="bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+            <option [ngValue]="null">-- Seleccione Empresa --</option>
+            @for (company of companies(); track company.id) { <option [value]="company.id">{{ company.name }}</option> }
+        </select>
+    </div>
+    @if (selectedCompanyId()) {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+            <!-- Master Panel (Warehouses) -->
+            <div class="flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-lg font-semibold text-gray-300">Bodegas</h4>
+                    <button (click)="openNewWarehousePanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg text-sm">Nueva Bodega</button>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg border border-gray-700/50 overflow-hidden flex-1">
+                    <div class="overflow-y-auto h-[50vh]">
+                        @for (warehouse of filteredWarehouses(); track warehouse.code) {
+                            <div (click)="selectWarehouse(warehouse)" class="flex justify-between items-center p-3 cursor-pointer border-b border-gray-700/50" [class.bg-emerald-900/50]="selectedWarehouse()?.code === warehouse.code" [class.hover:bg-gray-700/50]="selectedWarehouse()?.code !== warehouse.code" [class.opacity-60]="!warehouse.isActive">
+                                <div>
+                                    <span class="font-mono text-xs text-gray-400 mr-2">{{ warehouse.code }}</span>
+                                    <span class="font-medium" [class.line-through]="!warehouse.isActive">{{ warehouse.name }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button (click)="openEditWarehousePanel(warehouse); $event.stopPropagation()" class="text-cyan-400 hover:text-cyan-300 p-1"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                                    <button (click)="openWarehouseVigenciaModal(warehouse); $event.stopPropagation()" class="p-1" [class]="warehouse.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+                                    <button (click)="openWarehouseDeleteModal(warehouse); $event.stopPropagation()" class="text-red-500 hover:text-red-400 p-1" title="Eliminar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        } @empty { <div class="p-6 text-center text-gray-500 text-sm">No hay bodegas.</div>}
+                    </div>
+                </div>
+            </div>
+            <!-- Detail Panel (Levels) -->
+            <div class="flex flex-col">
+                @if(selectedWarehouse()){
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-gray-300 truncate">Niveles en "{{selectedWarehouse()?.name}}"</h4>
+                        <button (click)="openNewLevelPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg text-sm">Nuevo Nivel</button>
+                    </div>
+                    <div class="bg-gray-800/50 rounded-lg border border-gray-700/50 overflow-hidden flex-1">
+                        <div class="overflow-y-auto h-[50vh]">
+                            @for (level of selectedWarehouse()?.levels ?? []; track level.code) {
+                            <div class="flex justify-between items-center p-3 border-b border-gray-700/50" [class.opacity-60]="!level.isActive">
+                                <div>
+                                    <span class="font-mono text-xs text-gray-400 mr-2">{{ level.code }}</span>
+                                    <span class="font-medium" [class.line-through]="!level.isActive">{{ level.name }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button (click)="openEditLevelPanel(level)" class="text-cyan-400 hover:text-cyan-300 p-1"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                                    <button (click)="openLevelVigenciaModal(level)" class="p-1" [class]="level.isActive ? 'text-gray-400 hover:text-white' : 'text-yellow-400 hover:text-yellow-300'"><svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C3.732 4.943 9.522 4.5 10 4.5c.478 0 6.268.443 9.542 5.5c-3.274 5.057-9.064 5.5-9.542 5.5c-.478 0-6.268-.443-9.542-5.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg></button>
+                                    <button (click)="openLevelDeleteModal(level)" class="text-red-500 hover:text-red-400 p-1" title="Eliminar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            } @empty { <div class="p-6 text-center text-gray-500 text-sm">No hay niveles.</div> }
+                        </div>
+                    </div>
+                } @else {
+                     <div class="flex flex-col items-center justify-center h-full bg-gray-800/30 rounded-lg border-2 border-dashed border-gray-700/50">
+                        <svg class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" /></svg>
+                        <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione una Bodega</p>
+                    </div>
+                }
+            </div>
+        </div>
+    } @else {
+        <div class="flex flex-col items-center justify-center h-64 bg-gray-800/30 rounded-lg border-2 border-dashed border-gray-700/50">
+            <svg class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M5 13h14M5 17h14M5 9h14" /></svg>
+            <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione una Empresa</p>
+        </div>
+    }
+</div>
+
+<!-- Warehouse Panel -->
+@if (isWarehousePanelOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60" (click)="closeWarehousePanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition" [class]="isWarehousePanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="warehouseForm" (ngSubmit)="saveWarehouse()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ warehouseFormMode() === 'new' ? 'Nueva Bodega' : 'Editar Bodega' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código</label>
+              <input type="number" formControlName="code" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+              @if (warehouseForm.get('code')?.hasError('codeExists')) { <p class="mt-1 text-xs text-red-400">Este código ya existe.</p> }
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Nombre</label>
+              <input type="text" formControlName="name" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeWarehousePanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="warehouseForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Level Panel -->
+@if (isLevelPanelOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60" (click)="closeLevelPanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-md transform transition" [class]="isLevelPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="levelForm" (ngSubmit)="saveLevel()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ levelFormMode() === 'new' ? 'Nuevo Nivel' : 'Editar Nivel' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Código</label>
+              <input type="number" formControlName="code" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+               @if (levelForm.get('code')?.hasError('codeExists')) { <p class="mt-1 text-xs text-red-400">Este código ya existe para esta bodega.</p> }
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Nombre</label>
+              <input type="text" formControlName="name" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closeLevelPanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="levelForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Warehouse Vigencia Modal -->
+@if (isWarehouseConfirmModalOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-white">{{ warehouseToToggleVigencia()?.isActive ? 'Desactivar Bodega' : 'Reactivar Bodega' }}</h3>
+            <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ warehouseToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} la bodega "{{ warehouseToToggleVigencia()?.name }}"?</p>
+          </div>
+          <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+            <button type="button" (click)="confirmToggleWarehouseVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="warehouseToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">Confirmar</button>
+            <button type="button" (click)="closeWarehouseConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Level Vigencia Modal -->
+@if (isLevelConfirmModalOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-white">{{ levelToToggleVigencia()?.isActive ? 'Desactivar Nivel' : 'Reactivar Nivel' }}</h3>
+            <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ levelToToggleVigencia()?.isActive ? 'desactivar' : 'reactivar' }} el nivel "{{ levelToToggleVigencia()?.name }}"?</p>
+          </div>
+          <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+            <button type="button" (click)="confirmToggleLevelVigencia()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm" [class]="levelToToggleVigencia()?.isActive ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-green-600 hover:bg-green-500'">Confirmar</button>
+            <button type="button" (click)="closeLevelConfirmModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Warehouse Delete Modal -->
+@if (isWarehouseDeleteModalOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+          <div class="p-6">
+            <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-900/50 sm:mx-0 sm:h-10 sm:w-10">
+                <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+              </div>
+              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <h3 class="text-lg font-semibold text-white">Eliminar Bodega</h3>
+                <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas eliminar permanentemente la bodega "{{ warehouseToDelete()?.name }}"? Esta acción no se puede deshacer y eliminará todos sus niveles asociados.</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+            <button type="button" (click)="confirmDeleteWarehouse()" class="w-full sm:w-auto sm:ml-3 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500">Sí, eliminar</button>
+            <button type="button" (click)="closeWarehouseDeleteModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Level Delete Modal -->
+@if (isLevelDeleteModalOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+          <div class="p-6">
+            <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-900/50 sm:mx-0 sm:h-10 sm:w-10">
+                <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+              </div>
+              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <h3 class="text-lg font-semibold text-white">Eliminar Nivel</h3>
+                <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas eliminar permanentemente el nivel "{{ levelToDelete()?.name }}"? Esta acción no se puede deshacer.</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+            <button type="button" (click)="confirmDeleteLevel()" class="w-full sm:w-auto sm:ml-3 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500">Sí, eliminar</button>
+            <button type="button" (click)="closeLevelDeleteModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

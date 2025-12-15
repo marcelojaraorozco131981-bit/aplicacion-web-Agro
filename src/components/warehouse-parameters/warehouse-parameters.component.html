@@ -1,0 +1,35 @@
+<div class="container mx-auto">
+  <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+    <h2 class="text-3xl font-bold text-gray-100">Parámetros de Bodega</h2>
+  </div>
+
+  <div class="mb-6 border-b border-gray-700">
+    <nav class="-mb-px flex space-x-1 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
+      <button (click)="setView('ingredientes-activos')" [class]="activeView() === 'ingredientes-activos' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'" class="whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-medium text-sm transition-colors">
+        Ingredientes Activos
+      </button>
+      <button (click)="setView('unidades-medida')" [class]="activeView() === 'unidades-medida' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'" class="whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-medium text-sm transition-colors">
+        Unidades de Medida
+      </button>
+      <button (click)="setView('maestro-articulos')" [class]="activeView() === 'maestro-articulos' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'" class="whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-medium text-sm transition-colors">
+        Maestro Artículos
+      </button>
+       <button (click)="setView('bodegas')" [class]="activeView() === 'bodegas' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'" class="whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-medium text-sm transition-colors">
+        Bodegas y Niveles
+      </button>
+      <button (click)="setView('contabilizacion')" [class]="activeView() === 'contabilizacion' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'" class="whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-medium text-sm transition-colors">
+        Parám. Contabilización
+      </button>
+    </nav>
+  </div>
+
+  <div class="mt-4">
+    @switch (activeView()) {
+      @case ('ingredientes-activos') { <app-ingredientes-activos></app-ingredientes-activos> }
+      @case ('unidades-medida') { <app-unidades-medida></app-unidades-medida> }
+      @case ('maestro-articulos') { <app-maestro-articulos></app-maestro-articulos> }
+      @case ('bodegas') { <app-gestion-bodegas></app-gestion-bodegas> }
+      @case ('contabilizacion') { <app-parametros-contabilizacion-bodega></app-parametros-contabilizacion-bodega> }
+    }
+  </div>
+</div>

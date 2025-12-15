@@ -1,11 +1,31 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { IngredientesActivosComponent } from '../ingredientes-activos/ingredientes-activos.component';
+import { UnidadesMedidaComponent } from '../unidades-medida/unidades-medida.component';
+import { MaestroArticulosComponent } from '../maestro-articulos/maestro-articulos.component';
+import { GestionBodegasComponent } from '../gestion-bodegas/gestion-bodegas.component';
+import { ParametrosContabilizacionBodegaComponent } from '../parametros-contabilizacion-bodega/parametros-contabilizacion-bodega.component';
+
+type WarehouseParamView = 'ingredientes-activos' | 'unidades-medida' | 'maestro-articulos' | 'bodegas' | 'contabilizacion';
 
 @Component({
   selector: 'app-warehouse-parameters',
-  template: `<div class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-    <h2 class="text-3xl font-bold mb-4 text-gray-100">Parámetros de Bodega</h2>
-    <p class="text-gray-400">Módulo para la configuración de parámetros generales de las bodegas. En construcción.</p>
-  </div>`,
+  templateUrl: './warehouse-parameters.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    IngredientesActivosComponent,
+    UnidadesMedidaComponent,
+    MaestroArticulosComponent,
+    GestionBodegasComponent,
+    ParametrosContabilizacionBodegaComponent,
+  ],
 })
-export class WarehouseParametersComponent {}
+export class WarehouseParametersComponent {
+  activeView = signal<WarehouseParamView>('ingredientes-activos');
+
+  setView(view: WarehouseParamView): void {
+    this.activeView.set(view);
+  }
+}
