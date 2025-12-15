@@ -1,0 +1,315 @@
+<div class="container mx-auto">
+  <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+    <div class="flex items-center gap-4">
+      <h2 class="text-3xl font-bold text-gray-100">Movimientos de Bodega</h2>
+      <select (change)="onCompanyChange($event)" class="bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+        <option [ngValue]="null">-- Seleccione Empresa --</option>
+        @for (company of companies(); track company.id) {
+          <option [value]="company.id">{{ company.name }}</option>
+        }
+      </select>
+    </div>
+    @if (selectedCompanyId()) {
+      <button (click)="openNewPanel()" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Nuevo Movimiento
+      </button>
+    }
+  </div>
+
+  @if (selectedCompanyId()) {
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('id')" class="flex items-center gap-1.5 group">Nro.</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('date')" class="flex items-center gap-1.5 group">Fecha</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('type')" class="flex items-center gap-1.5 group">Tipo</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('providerName')" class="flex items-center gap-1.5 group">Proveedor</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('docNum')" class="flex items-center gap-1.5 group">Nro Docto</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('purchaseOrderNumber')" class="flex items-center gap-1.5 group">O/C</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('warehouseName')" class="flex items-center gap-1.5 group">Bodega</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('movementWarehouseName')" class="flex items-center gap-1.5 group">Bod. Destino</button></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"><button (click)="onSort('status')" class="flex items-center gap-1.5 group">Estado</button></th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            @for (movement of sortedMovements(); track movement.id) {
+              <tr class="hover:bg-gray-700/50" [class.opacity-60]="movement.status === 'Anulado'">
+                <td class="px-6 py-4 whitespace-nowrap font-mono text-emerald-400">{{ movement.id }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ movement.date }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ movement.type }}</td>
+                <td class="px-6 py-4 whitespace-nowrap max-w-[150px] truncate">{{ movement.providerName }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono">{{ movement.docNum }}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-mono">{{ movement.purchaseOrderNumber }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ movement.warehouseName }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ movement.movementWarehouseName }}</td>
+                <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [class]="statusColors[movement.status]">{{ movement.status }}</span></td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  @if (movement.status === 'Pendiente') {
+                    <button (click)="openConfirmationModal(movement, 'process')" class="text-green-400 hover:text-green-300 p-2 rounded-md" title="Procesar"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></button>
+                    <button (click)="openEditPanel(movement)" class="text-cyan-400 hover:text-cyan-300 p-2 rounded-md ml-2" title="Editar"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
+                    <button (click)="openConfirmationModal(movement, 'cancel')" class="text-yellow-400 hover:text-yellow-300 p-2 rounded-md ml-2" title="Anular"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg></button>
+                    <button (click)="openConfirmationModal(movement, 'delete')" class="text-red-500 hover:text-red-400 p-2 rounded-md ml-2" title="Eliminar"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="10" class="text-center py-8 text-gray-500">No hay movimientos registrados para esta empresa.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  } @else {
+    <div class="flex flex-col items-center justify-center h-64 bg-gray-800 rounded-lg border-2 border-dashed border-gray-700">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M5 13h14M5 17h14M5 9h14" /></svg>
+      <p class="mt-4 text-lg font-semibold text-gray-400">Seleccione una Empresa</p>
+    </div>
+  }
+</div>
+
+<!-- Slide-over Panel for New/Edit -->
+@if (isPanelOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60" (click)="closePanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-4xl transform transition" [class]="isPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="movementForm" (ngSubmit)="saveMovement()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-6 py-4"><h2 class="text-lg font-medium text-white">{{ formMode() === 'new' ? 'Nuevo Movimiento' : 'Editar Movimiento' }}</h2></div>
+          <div class="relative mt-6 flex-1 px-6 space-y-4">
+             <div>
+              <label class="block text-sm font-medium text-gray-300">Nro. Correlativo</label>
+              <input type="number" formControlName="id" class="mt-1 block w-full bg-gray-900 border-gray-700 rounded-md py-2 px-3 text-emerald-400 font-mono focus:ring-0 focus:border-gray-700 disabled:opacity-70 disabled:cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Empresa</label>
+              <select formControlName="companyId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                  <option [ngValue]="null" disabled>Seleccione...</option>
+                  @for (company of companies(); track company.id) {
+                      <option [value]="company.id">{{ company.name }}</option>
+                  }
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-300">Fecha</label>
+                <input type="date" formControlName="date" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300">Tipo de Movimiento</label>
+                <select formControlName="type" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                  <option [ngValue]="null" disabled>Seleccione...</option>
+                  @for(type of movementTypes; track type.id) { <option [value]="type.id">{{ type.name }}</option> }
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-300">Bodega</label>
+              <select formControlName="warehouseId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                <option [ngValue]="null" disabled>Seleccione...</option>
+                @for(wh of formFilteredWarehouses(); track wh.id) { <option [value]="wh.id">{{ wh.name }}</option> }
+              </select>
+            </div>
+             @if (formType() === 'Traspaso') {
+              <div>
+                <label class="block text-sm font-medium text-gray-300">Bodega Destino</label>
+                <select formControlName="movementWarehouseId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                  <option [ngValue]="null" disabled>Seleccione...</option>
+                   @for(wh of formDestinationWarehouses(); track wh.id) { <option [value]="wh.id">{{ wh.name }}</option> }
+                </select>
+              </div>
+            }
+            @if (formType() === 'Ingreso') {
+                <div class="border-t border-gray-700 pt-4 mt-4">
+                    <h3 class="text-base font-medium text-gray-200 mb-3">Información del Documento</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300">Proveedor</label>
+                                <select formControlName="providerId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option [ngValue]="null" disabled>Seleccione...</option>
+                                    @for(p of providers(); track p.id) { <option [value]="p.id">{{ p.name }}</option> }
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300">Sucursal</label>
+                                <select formControlName="branchId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+                                    <option [ngValue]="null" disabled>Seleccione...</option>
+                                    @for(b of filteredBranches(); track b.id) { <option [value]="b.id">{{ b.name }}</option> }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300">Tipo Docto</label>
+                                <select formControlName="docTypeId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option [ngValue]="null" disabled>Seleccione...</option>
+                                    @for(dt of docTypes(); track dt.id) { <option [value]="dt.id">{{ dt.name }}</option> }
+                                </select>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-sm font-medium text-gray-300">Número</label>
+                                <input type="text" formControlName="docNum" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-sm font-medium text-gray-300">TC (Tipo Cambio)</label>
+                                <input type="number" step="0.01" formControlName="exchangeRate" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300">O/C</label>
+                            <select formControlName="purchaseOrderId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 disabled:opacity-50">
+                                <option [ngValue]="null">Ninguna</option>
+                                @for(po of filteredPurchaseOrders(); track po.id) { <option [value]="po.id">{{ po.number }}</option> }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            }
+             <div>
+                <label class="block text-sm font-medium text-gray-300">BPA</label>
+                <select formControlName="bpaId" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500">
+                    <option [ngValue]="null">Ninguno</option>
+                    @for(bpa of bpas(); track bpa.id) { <option [value]="bpa.id">{{ bpa.description }}</option> }
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300">Observaciones</label>
+                <textarea formControlName="observations" rows="3" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500"></textarea>
+            </div>
+
+            <div class="border-t border-gray-700 pt-4 mt-4">
+              <h3 class="text-base font-medium text-gray-200 mb-3">Detalle del Movimiento</h3>
+              <div formArrayName="details" class="space-y-4">
+                @for(detail of details.controls; track i; let i = $index) {
+                  @let detailGroup = details.controls[i];
+                  <div [formGroupName]="i" class="p-4 bg-gray-900/50 rounded-lg border border-gray-700 space-y-3">
+                    
+                    <div class="flex items-start gap-4">
+                      <div class="flex-grow">
+                        <label [for]="'articulo-'+i" class="text-xs font-medium text-gray-400">Artículo</label>
+                        <select [id]="'articulo-'+i" formControlName="itemId" class="detail-input">
+                          <option [ngValue]="null" disabled>Seleccione Artículo...</option>
+                          @for(a of formFilteredArticulos(); track a.itemCode){ <option [ngValue]="a.itemCode">{{a.name}}</option> }
+                        </select>
+                      </div>
+                      <div class="w-32">
+                        <label [for]="'cantidad-'+i" class="text-xs font-medium text-gray-400">Cantidad</label>
+                        <input type="number" [id]="'cantidad-'+i" formControlName="quantity" step="0.01" class="detail-input">
+                      </div>
+                      <div class="pt-5">
+                        <button type="button" (click)="removeDetailLine(i)" class="text-red-500 hover:text-red-400 p-2 rounded-md" title="Eliminar Ítem">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-3 border-t border-gray-700/50">
+                      <div>
+                        <label [for]="'ubicacion-'+i" class="text-xs font-medium text-gray-400">Ubicación @if(formType() === 'Traspaso'){Origen}</label>
+                        <select [id]="'ubicacion-'+i" formControlName="warehouseLocationId" class="detail-input">
+                           <option [ngValue]="null" disabled>Seleccione...</option>
+                           @for(loc of getLocationsWithBalances(detailGroup, movementForm.get('warehouseId')?.value); track loc.id){ 
+                              <option [ngValue]="loc.id">{{loc.name}} (Saldo: {{loc.balance}})</option>
+                           }
+                        </select>
+                        <div class="text-xs text-gray-400 mt-1 h-4">Saldo: <span class="font-mono text-gray-200">{{ getItemBalance(detailGroup) }}</span></div>
+                      </div>
+
+                      @if (formType() === 'Traspaso') {
+                        <div>
+                           <label [for]="'ubicacion-dest-'+i" class="text-xs font-medium text-gray-400">Ubicación Destino</label>
+                           <select [id]="'ubicacion-dest-'+i" formControlName="newWarehouseLocationId" class="detail-input">
+                             <option [ngValue]="null" disabled>Seleccione...</option>
+                              @for(loc of getLocationsWithBalances(detailGroup, movementForm.get('movementWarehouseId')?.value); track loc.id){
+                                <option [ngValue]="loc.id">{{loc.name}} (Saldo: {{loc.balance}})</option>
+                              }
+                           </select>
+                           <div class="h-4 mt-1"></div>
+                        </div>
+                      }
+                      
+                      @if (formType() === 'Ingreso' || formType() === 'Egreso') {
+                         <div>
+                            <label [for]="'centro-costo-'+i" class="text-xs font-medium text-gray-400">Centro Costo</label>
+                            <select [id]="'centro-costo-'+i" formControlName="costCenterId" class="detail-input">
+                              <option [ngValue]="null" disabled>Seleccione...</option>
+                              @for(cc of costCenters();track cc.id){ <option [ngValue]="cc.id">{{cc.name}}</option> }
+                            </select>
+                            <div class="h-4 mt-1"></div>
+                         </div>
+                      }
+                      
+                      @if (formType() === 'Ingreso') {
+                         <div>
+                            <label [for]="'tipo-compra-'+i" class="text-xs font-medium text-gray-400">Tipo Compra</label>
+                            <select [id]="'tipo-compra-'+i" formControlName="purchaseTypeId" class="detail-input">
+                              <option [ngValue]="null" disabled>Seleccione...</option>
+                              @for(pt of purchaseTypes();track pt.id){ <option [ngValue]="pt.id">{{pt.name}}</option> }
+                            </select>
+                            <div class="h-4 mt-1"></div>
+                         </div>
+                         <div>
+                            <label [for]="'p-unitario-'+i" class="text-xs font-medium text-gray-400">P. Unitario</label>
+                            <input type="number" [id]="'p-unitario-'+i" formControlName="unitPrice" step="0.01" class="detail-input">
+                            <div class="h-4 mt-1"></div>
+                         </div>
+                      }
+                    </div>
+
+                  </div>
+                }
+              </div>
+              <button type="button" (click)="addDetailLine()" class="mt-3 flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-300 font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                Agregar Artículo
+              </button>
+            </div>
+
+          </div>
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closePanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="movementForm.invalid" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-50">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <style>
+    .detail-input {
+      @apply block w-full bg-gray-700 border-gray-600 rounded-md py-1.5 px-3 text-white focus:ring-emerald-500 focus:border-emerald-500 text-sm;
+    }
+  </style>
+}
+
+<!-- Confirmation Modal -->
+@if (confirmationMode()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative transform rounded-lg bg-gray-800 text-left shadow-xl transition-all sm:w-full sm:max-w-lg border border-gray-700">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-white capitalize">{{ confirmationMode() }} Movimiento</h3>
+            <p class="mt-2 text-sm text-gray-400">¿Estás seguro de que deseas {{ confirmationMode() }} el movimiento Nro. {{ movementToConfirm()?.id }}?</p>
+          </div>
+          <div class="bg-gray-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-700">
+            @if(confirmationMode() === 'process'){
+                <button type="button" (click)="confirmAction()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm bg-green-600 hover:bg-green-500">Confirmar</button>
+            } @else if (confirmationMode() === 'cancel'){
+                 <button type="button" (click)="confirmAction()" class="w-full sm:w-auto sm:ml-3 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm bg-yellow-600 hover:bg-yellow-500">Confirmar</button>
+            } @else if (confirmationMode() === 'delete'){
+                 <button type="button" (click)="confirmAction()" class="w-full sm:w-auto sm:ml-3 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm bg-red-600 hover:bg-red-500">Confirmar</button>
+            }
+            <button type="button" (click)="closeConfirmationModal()" class="mt-3 sm:mt-0 w-full sm:w-auto rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
