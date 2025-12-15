@@ -126,6 +126,8 @@ import { IngredientesActivosComponent } from './components/ingredientes-activos/
 import { UnidadesMedidaComponent } from './components/unidades-medida/unidades-medida.component';
 import { GestionBodegasComponent } from './components/gestion-bodegas/gestion-bodegas.component';
 import { ParametrosContabilizacionBodegaComponent } from './components/parametros-contabilizacion-bodega/parametros-contabilizacion-bodega.component';
+import { WarehouseGuidesReportComponent } from './components/warehouse-guides-report/warehouse-guides-report.component';
+import { WarehouseVoidedGuidesReportComponent } from './components/warehouse-voided-guides-report/warehouse-voided-guides-report.component';
 
 
 interface NavItem {
@@ -265,6 +267,8 @@ interface NavItem {
     UnidadesMedidaComponent,
     GestionBodegasComponent,
     ParametrosContabilizacionBodegaComponent,
+    WarehouseGuidesReportComponent,
+    WarehouseVoidedGuidesReportComponent,
   ],
 })
 export class AppComponent {
@@ -313,6 +317,8 @@ export class AppComponent {
         { id: 'warehouse-summary', name: 'Resumen Bodega' },
         { id: 'warehouse-parameters', name: 'Parametros Bodega' },
         { id: 'warehouse-movements', name: 'Movimientos Bodega' },
+        { id: 'warehouse-guides-report', name: 'Informe Guias Bodega' },
+        { id: 'warehouse-voided-guides-report', name: 'Informe Guias Nulas' },
         { id: 'warehouse-reports', name: 'Informes Bodega' },
         { id: 'warehouse-accounting-transfer', name: 'Traspaso Contable' },
         { id: 'warehouse-month-end-closing', name: 'Cierre Mes' }
