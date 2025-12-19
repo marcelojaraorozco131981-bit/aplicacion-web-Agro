@@ -1,0 +1,110 @@
+<div class="container mx-auto">
+    <!-- Header -->
+    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+      <h2 class="text-3xl font-bold text-gray-100">Indicadores Financieros</h2>
+      <div class="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg p-2">
+          <button (click)="previousMonth()" class="p-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          </button>
+          <select [value]="currentDate().getMonth()" (change)="changeMonth($event)" class="bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm">
+            @for(month of monthNames; track i; let i = $index) {
+              <option [value]="i">{{ month }}</option>
+            }
+          </select>
+          <input type="number" [value]="currentDate().getFullYear()" (change)="changeYear($event)" min="2000" max="2100" class="bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm w-24">
+          <button (click)="nextMonth()" class="p-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          <button (click)="goToToday()" class="px-3 py-2 text-sm font-semibold rounded-md hover:bg-gray-700 border border-gray-600 ml-2">Hoy</button>
+      </div>
+    </div>
+    
+    <!-- Calendar -->
+    <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden">
+        <div class="grid grid-cols-7 text-center text-sm">
+            @for(dayName of weekDayNames; track dayName) {
+                <div class="py-3 font-medium text-gray-300 bg-gray-700/50 border-b border-gray-700">{{ dayName }}</div>
+            }
+        </div>
+        <div class="grid grid-cols-7 grid-rows-6 gap-px bg-gray-700">
+            @for (day of calendarDays(); track day.date.getTime()) {
+                <button 
+                    (click)="selectDate(day)" 
+                    [disabled]="!day.isCurrentMonth"
+                    class="relative min-h-[100px] p-2 text-right bg-gray-800 transition-colors duration-200 focus:z-10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-emerald-500" 
+                    [class.disabled:opacity-40]="!day.isCurrentMonth"
+                    [class.hover:bg-gray-700/60]="day.isCurrentMonth"
+                    [class.bg-emerald-900/50]="selectedDate() && selectedDate()!.getTime() === day.date.getTime()">
+                    <span 
+                        class="text-sm font-semibold" 
+                        [class.text-white]="day.isToday"
+                        [class.ring-2]="day.isToday"
+                        [class.ring-emerald-500]="day.isToday"
+                        [class.rounded-full]="day.isToday"
+                        [class.px-1.5]="day.isToday"
+                        [class.py-0.5]="day.isToday"
+                        [class.text-gray-400]="!day.isToday">
+                        {{ day.date.getDate() }}
+                    </span>
+                    @if (day.hasData && day.isCurrentMonth) {
+                        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-2 h-2 bg-green-400 rounded-full"></div>
+                    }
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Slide-over Panel for New/Edit -->
+@if (isPanelOpen()) {
+  <div class="relative z-50">
+    <div class="fixed inset-0 bg-black/60" (click)="closePanel()"></div>
+    <div class="fixed inset-y-0 right-0 flex max-w-full">
+      <div class="relative w-screen max-w-sm transform transition ease-in-out duration-500" [class]="isPanelOpen() ? 'translate-x-0' : 'translate-x-full'">
+        <form [formGroup]="indicatorForm" (ngSubmit)="saveIndicator()" class="flex h-full flex-col overflow-y-scroll bg-gray-800 border-l border-gray-700 shadow-xl">
+          <div class="bg-gray-700 px-4 sm:px-6 py-4">
+             <div class="flex items-start justify-between">
+                <h2 class="text-lg font-medium text-white">Indicadores para <br> <span class="text-emerald-400">{{ selectedDate()?.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</span></h2>
+                 <button type="button" (click)="closePanel()" class="rounded-md bg-gray-700 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+             </div>
+          </div>
+          
+          <div class="relative mt-6 flex-1 px-4 sm:px-6">
+            <div class="space-y-4">
+              <input type="hidden" formControlName="date">
+              <div class="form-field"><label for="dolar">Dólar</label><input type="number" id="dolar" formControlName="dolar" step="0.01" class="form-input"></div>
+              <div class="form-field"><label for="euro">Euro</label><input type="number" id="euro" formControlName="euro" step="0.01" class="form-input"></div>
+              <div class="form-field"><label for="uf">UF</label><input type="number" id="uf" formControlName="uf" step="0.01" class="form-input"></div>
+              <div class="form-field"><label for="utm">UTM</label><input type="number" id="utm" formControlName="utm" class="form-input"></div>
+              <div class="form-field"><label for="ipc">IPC (%)</label><input type="number" id="ipc" formControlName="ipc" step="0.1" class="form-input"></div>
+            </div>
+          </div>
+
+          <div class="flex flex-shrink-0 justify-end px-4 py-4 border-t border-gray-700">
+            <button type="button" (click)="closePanel()" class="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500">Cancelar</button>
+            <button type="submit" [disabled]="indicatorForm.invalid || indicatorForm.pristine || isSaving()" class="ml-4 inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50 min-w-[100px]">
+              @if(isSaving()) { <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> }
+              @else if (saveSuccess()) { <span>¡Guardado!</span> }
+              @else { <span>Guardar</span> }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<style>
+  .form-field { @apply flex flex-col; }
+  .form-field label { @apply block text-sm font-medium text-gray-400 mb-1; }
+  .form-input { @apply block w-full bg-gray-900/70 border-2 border-gray-600/80 rounded-lg shadow-sm py-2 px-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 sm:text-sm transition-all duration-200; }
+  .form-input:hover { @apply border-gray-500; }
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+  }
+  input[type=number] { -moz-appearance: textfield; }
+</style>
